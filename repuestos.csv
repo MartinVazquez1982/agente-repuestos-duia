@@ -1,0 +1,120 @@
+id_repuesto,repuesto_descripcion,categoria,marca,modelo,proveedor_tipo,proveedor_id,proveedor_nombre,proveedor_rating,costo_unitario,moneda,stock_disponible,lead_time_dias,ubicacion_stock,cantidad_minima_pedido,tiempo_vida_estimado_hrs,nota
+R-0001,Rodamiento rígido de bolas 6204 2RS,RODAMIENTO,SKF,6204-2RS,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,8.50,USD,24,1,Depósito Central,1,10000,Stock crítico para motores eléctricos pequeños
+R-0001,Rodamiento rígido de bolas 6204 2RS,RODAMIENTO,SKF,6204-2RS,EXTERNAL,PRV-001,Distribuidora Rodamax,4,7.90,USD,100,5,Prov. Buenos Aires,5,10000,Descuento por compras mayores a 50 unidades
+R-0001,Rodamiento rígido de bolas 6204 2RS,RODAMIENTO,GENERICA,6204-2RS,EXTERNAL,PRV-002,Importadora GenBearing,3,5.40,USD,300,10,China (via Bs.As.),10,8000,Opción económica, mayor lead time
+R-0002,Filtro de aceite motor diésel 3/4",FILTRO,MANN,WD940/25,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,12.00,USD,10,1,Depósito Central,1,500,Usado en generadores grupo A
+R-0002,Filtro de aceite motor diésel 3/4",FILTRO,MANN,WD940/25,EXTERNAL,PRV-003,Proveedor Motores Sur,4,11.20,USD,40,4,Neuquén,2,500,Proveedor habitual de la flota
+R-0003,Correa trapezoidal SPA 1200,CORREA,GATES,SPA1200,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,6.30,USD,5,2,Depósito Sede 2,1,2000,Stock limitado, revisar reposición
+R-0003,Correa trapezoidal SPA 1200,CORREA,GATES,SPA1200,EXTERNAL,PRV-004,Cintas Industriales SRL,5,5.90,USD,80,3,Córdoba,3,2000,Entrega rápida, buen historial
+R-0004,Sensor de temperatura PT100 4mm x 100mm,SENSOR,Siemens,PT100-4X100,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,35.00,USD,3,1,Depósito Central,1,20000,Repuesto crítico para hornos
+R-0004,Sensor de temperatura PT100 4mm x 100mm,SENSOR,Siemens,PT100-4X100,EXTERNAL,PRV-005,Automatización del Sur,4,32.50,USD,15,7,Rosario,2,20000,Puede requerir calibración
+R-0005,Bomba centrífuga 3 HP eje horizontal,BOMBA,Wilo,W-3HP-H,EXTERNAL,PRV-006,Bombas Industriales SA,5,420.00,USD,4,12,San Martín (GBA),1,30000,No se maneja en stock interno
+R-0006,Kit sello mecánico bomba 3 HP,BOMBA,Wilo,SM-W-3HP,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,65.00,USD,6,1,Depósito Central,1,15000,Compatible con bomba R-0005
+R-0006,Kit sello mecánico bomba 3 HP,BOMBA,Wilo,SM-W-3HP,EXTERNAL,PRV-006,Bombas Industriales SA,5,59.00,USD,20,10,San Martín (GBA),1,15000,Recomendado comprar junto con bomba
+R-0007,Cartucho filtro de aire compresor 250 m3/h,FILTRO,Atlas Copco,AC-250,INTERNAL,INT-ALM-CENTRAL,Almacén Central,4,28.00,USD,0,0,Depósito Central,1,1000,Sin stock, pendiente de reponer
+R-0007,Cartucho filtro de aire compresor 250 m3/h,FILTRO,Atlas Copco,AC-250,EXTERNAL,PRV-007,Compresores Patagónicos,5,26.50,USD,12,6,Comodoro Rivadavia,2,1000,Proveedor recomendado por servicio técnico
+R-0008,Contacto auxiliar para guardamotor 1NA+1NC,ELECTRICO,Schneider,GVAN11,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,9.80,USD,15,1,Depósito Sede 2,1,5000,Usado en tableros de fuerza
+R-0008,Contacto auxiliar para guardamotor 1NA+1NC,ELECTRICO,Schneider,GVAN11,EXTERNAL,PRV-008,Materiales Eléctricos Centro,3,9.20,USD,50,3,Mendoza,5,5000,Requiere compra mínima de 5 unidades
+R-0009,Kit mantenimiento válvula neumática 1/2",NEUMATICA,Festo,KM-VALV-12,EXTERNAL,PRV-009,Neumática Industrial SA,5,48.00,USD,30,5,Buenos Aires,1,8000,Opción principal para mantenimiento de línea neumática
+R-0010,Manómetro glicerina 0-16 bar 1/4",INSTRUMENTO,Genérico,MAN-016BAR,INTERNAL,INT-ALM-CENTRAL,Almacén Central,3,14.00,USD,2,1,Depósito Central,1,4000,Stock bajo, considerar compra
+R-0010,Manómetro glicerina 0-16 bar 1/4",INSTRUMENTO,Genérico,MAN-016BAR,EXTERNAL,PRV-010,Mediciones y Control SRL,4,13.50,USD,25,4,La Plata,1,4000,Mejor precio y lead time aceptable
+R-0011,Relé térmico 4-6 A para motor 3 kW,ELECTRICO,Siemens,3RU2116-4AB0,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,52.00,USD,7,1,Depósito Central,1,15000,Critico para protecciones de motor
+R-0011,Relé térmico 4-6 A para motor 3 kW,ELECTRICO,Siemens,3RU2116-4AB0,EXTERNAL,PRV-008,Materiales Eléctricos Centro,3,49.80,USD,10,3,Mendoza,1,15000,Proveedor alternativo
+R-0012,Manguera hidráulica 1/2\" 2 m,MECANICO,Parker,H-HID-12-2M,EXTERNAL,PRV-011,Hidráulica del Oeste,5,75.00,USD,8,7,San Juan,1,6000,Se adquiere siempre externo
+R-0013,Kit junta tapa bomba de vacío,BOMBA,Busch,KJ-BV-01,INTERNAL,INT-ALM-CENTRAL,Almacén Central,4,39.00,USD,4,1,Depósito Central,1,5000,Repuesto habitual en mantenimiento anual
+R-0013,Kit junta tapa bomba de vacío,BOMBA,Busch,KJ-BV-01,EXTERNAL,PRV-012,Vacuumparts SA,5,36.50,USD,15,9,Buenos Aires,1,5000,Proveedor con soporte técnico especializado
+R-0014,Variador de frecuencia 2.2 kW trifásico,ELECTRICO,Schneider,ATV12-2.2,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,285.00,USD,2,1,Depósito Central,1,30000,Usado en cintas transportadoras
+R-0014,Variador de frecuencia 2.2 kW trifásico,ELECTRICO,Schneider,ATV12-2.2,EXTERNAL,PRV-005,Automatización del Sur,4,270.00,USD,6,7,Rosario,1,30000,Incluye soporte técnico
+R-0015,Interruptor automático curva C 32 A,ELECTRICO,ABB,S203-C32,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,18.00,USD,10,1,Depósito Sede 2,1,15000,Elemento común en tableros
+R-0015,Interruptor automático curva C 32 A,ELECTRICO,ABB,S203-C32,EXTERNAL,PRV-008,Materiales Eléctricos Centro,3,16.80,USD,40,3,Mendoza,5,15000,Compra mínima 5 unidades
+R-0016,Actuador neumático doble efecto NEUMAX 50,NEUMATICA,Neumax,ND-50,EXTERNAL,PRV-009,Neumática Industrial SA,5,120.00,USD,12,5,Buenos Aires,1,10000,Repuesto de válvulas de proceso
+R-0017,Valvula esférica 1” acero inox,MECANICO,Genérico,VAL-INOX-1,INTERNAL,INT-ALM-CENTRAL,Almacén Central,4,22.00,USD,5,1,Depósito Central,1,20000,Para líneas de agua y químicos
+R-0017,Valvula esférica 1” acero inox,MECANICO,Genérico,VAL-INOX-1,EXTERNAL,PRV-011,Hidráulica del Oeste,5,19.80,USD,50,6,San Juan,1,20000,Proveedor económico
+R-0018,Electroválvula 24VDC 1/4",NEUMATICA,Festo,EV24-14,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,46.00,USD,4,1,Depósito Sede 2,1,12000,Componente crítico en automatismos
+R-0018,Electroválvula 24VDC 1/4",NEUMATICA,Festo,EV24-14,EXTERNAL,PRV-009,Neumática Industrial SA,5,43.50,USD,25,4,Buenos Aires,1,12000,Stock estable
+R-0019,Cable unipolar 4 mm² negro,ELECTRICO,Prysmian,CAB-4MM-N,EXTERNAL,PRV-013,Cableado Argentino,4,0.90,USD,300,3,Córdoba,50,20000,Venta por rollos de 100 m
+R-0020,Cable unipolar 4 mm² rojo,ELECTRICO,Prysmian,CAB-4MM-R,EXTERNAL,PRV-013,Cableado Argentino,4,0.90,USD,280,3,Córdoba,50,20000,Venta por rollos de 100 m
+R-0021,Banda transportadora lisa 3 m,CORREA,Continental,BANDA-3M,EXTERNAL,PRV-014,Transportadoras Norte,5,130.00,USD,10,8,Tucumán,1,6000,Entrega especial a pedido
+R-0022,Bujía encendido motor estacionario,FILTRO,NGK,BUJ-NGK-01,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,7.50,USD,18,1,Depósito Central,1,2000,Para motores de reserva
+R-0022,Bujía encendido motor estacionario,FILTRO,NGK,BUJ-NGK-01,EXTERNAL,PRV-003,Proveedor Motores Sur,4,6.90,USD,60,4,Neuquén,2,2000,Buen precio por volumen
+R-0023,Acople elástico para bomba 3HP,BOMBA,KTR,AC-KTR-3HP,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,32.00,USD,3,1,Depósito Central,1,15000,Critico para transmisión
+R-0023,Acople elástico para bomba 3HP,BOMBA,KTR,AC-KTR-3HP,EXTERNAL,PRV-006,Bombas Industriales SA,5,29.80,USD,14,10,San Martín (GBA),1,15000,Recomendado por fabricante
+R-0024,Anillo oring NBR 30x3,MECANICO,Genérico,OR-30X3,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,3,0.40,USD,200,1,Depósito Sede 2,10,3000,Usado en múltiples equipos
+R-0025,Anillo oring NBR 40x4,MECANICO,Genérico,OR-40X4,INTERNAL,INT-ALM-CENTRAL,Almacén Central,3,0.55,USD,180,1,Depósito Central,10,3000,Reponer stock bajo en 2 meses
+R-0026,Presostato compresor 8 bar,INSTRUMENTO,Genérico,PRES-8B,EXTERNAL,PRV-007,Compresores Patagónicos,5,18.80,USD,20,5,Comodoro Rivadavia,1,5000,Compatible con compresores medianos
+R-0027,Transmisor de presión 4-20mA 0–10 bar,INSTRUMENTO,Wika,PT-10B,EXTERNAL,PRV-010,Mediciones y Control SRL,4,115.00,USD,7,6,La Plata,1,20000,Incluye certificado de calibración
+R-0028,Motor trifásico 5.5 kW IRAM,MECANICO,WEG,MOT-5K5,EXTERNAL,PRV-015,Motores del Sur SA,5,650.00,USD,3,12,Río Negro,1,40000,Motor estándar para bombas
+R-0029,Tornillo Allen M8x40 acero 8.8,MECANICO,Genérico,TALL-M8X40,INTERNAL,INT-ALM-CENTRAL,Almacén Central,4,0.12,USD,1000,1,Depósito Central,50,10000,Bulto de 100 unidades
+R-0030,Tornillo Allen M10x50 acero 8.8,MECANICO,Genérico,TALL-M10X50,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,0.20,USD,700,1,Depósito Sede 2,50,10000,Usado en estructuras metálicas
+R-0031,Módulo relé 24VDC 10A,ELECTRICO,Omron,REL-24V-10A,EXTERNAL,PRV-008,Materiales Eléctricos Centro,4,13.50,USD,40,3,Mendoza,5,8000,Entrega estable
+R-0032,Sonda nivel capacitiva 24VDC,SENSOR,IFM,SLC-24,EXTERNAL,PRV-005,Automatización del Sur,4,98.00,USD,5,7,Rosario,1,25000,Para silos y tolvas
+R-0033,Filtro hidráulico spin-on,FILTRO,Parker,FH-01,EXTERNAL,PRV-011,Hidráulica del Oeste,5,33.00,USD,18,6,San Juan,1,6000,Recurso crítico del sistema hidráulico
+R-0034,Ro damiento rígido 6305 ZZ,RODAMIENTO,SKF,6305-ZZ,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,12.50,USD,14,1,Depósito Central,1,12000,Muy utilizado en motores medianos
+R-0034,Rodamiento rígido 6305 ZZ,RODAMIENTO,SKF,6305-ZZ,EXTERNAL,PRV-001,Distribuidora Rodamax,4,11.80,USD,100,5,Prov. Buenos Aires,5,12000,Disponible siempre
+R-0035,Correa dentada HTD 5M 800,CORREA,Gates,HTD5M-800,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,9.00,USD,8,1,Depósito Sede 2,1,15000,Para transmisión liviana
+R-0036,Relé de sobrecarga electrónico 4-32A,ELECTRICO,Siemens,EOCR-4-32,EXTERNAL,PRV-005,Automatización del Sur,5,135.00,USD,4,6,Rosario,1,20000,Ideal para motores críticos
+R-0037,Caño hidráulico 1” alta presión,MECANICO,Parker,CN-HID-1,EXTERNAL,PRV-011,Hidráulica del Oeste,5,52.00,USD,10,7,San Juan,1,10000,Venta por metro
+R-0038,Cartucho filtro agua 5 micrones,FILTRO,Genérico,FIL-5MC,INTERNAL,INT-ALM-CENTRAL,Almacén Central,3,4.20,USD,30,1,Depósito Central,2,2000,Para ósmosis inversa
+R-0038,Cartucho filtro agua 5 micrones,FILTRO,Genérico,FIL-5MC,EXTERNAL,PRV-003,Proveedor Motores Sur,4,3.80,USD,80,3,Neuquén,5,2000,Económico
+R-0039,Interruptor de nivel flotante 10 m,SENSOR,Genérico,FL-10M,EXTERNAL,PRV-014,Transportadoras Norte,4,18.00,USD,22,6,Tucumán,1,10000,Para tanques de proceso
+R-0040,Kit junta válvula neumática pequeña,NEUMATICA,Festo,KJ-FES-01,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,5,11.00,USD,9,1,Depósito Sede 2,1,8000,Para mantenimiento rápido
+R-0041,Manómetro 0–6 bar 1/4",INSTRUMENTO,Wika,MAN-6B,EXTERNAL,PRV-010,Mediciones y Control SRL,5,16.50,USD,25,4,La Plata,1,5000,Alta precisión
+R-0042,Termocuplas tipo K 3mm x 200mm,SENSOR,Genérico,TC-K-3X200,EXTERNAL,PRV-012,Vacuumparts SA,4,21.00,USD,30,7,Buenos Aires,2,15000,Apta alta temperatura
+R-0043,Bomba neumática doble diafragma 1”,BOMBA,ARO,ARO-DD1,EXTERNAL,PRV-009,Neumática Industrial SA,5,740.00,USD,2,10,Buenos Aires,1,25000,Para productos corrosivos
+R-0044,Electrodo pH industrial,ELECTRICO,Hanna Instruments,PH-IND-01,EXTERNAL,PRV-016,Analítica SRL,5,89.00,USD,12,8,CABA,1,8000,Incluye solución de calibración
+R-0045,Tornillo prisionero M6x12,MECANICO,Genérico,PRIS-M6X12,INTERNAL,INT-ALM-CENTRAL,Almacén Central,3,0.08,USD,500,1,Depósito Central,50,5000,Alta demanda
+R-0046,Correa ventilador motor diésel,CORREA,Gates,FAN-500,EXTERNAL,PRV-003,Proveedor Motores Sur,5,14.80,USD,18,4,Neuquén,1,5000,Para generadores grupo B
+R-0047,Rodamiento cónico 30206,RODAMIENTO,Timken,30206,EXTERNAL,PRV-001,Distribuidora Rodamax,4,13.50,USD,70,6,Prov. Buenos Aires,3,12000,Excelente calidad
+R-0048,Final de carrera rodillo metálico,ELECTRICO,Omron,FC-RM,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,22.00,USD,3,1,Depósito Sede 2,1,20000,Usado en líneas automáticas
+R-0049,Contactor 40A bobina 24VDC,ELECTRICO,Siemens,3RT2046,EXTERNAL,PRV-008,Materiales Eléctricos Centro,3,69.00,USD,12,3,Mendoza,1,20000,Opción confiable
+R-0050,Arrancador suave 15 kW,ELECTRICO,Schneider,ATS01N2,EXTERNAL,PRV-005,Automatización del Sur,5,390.00,USD,2,10,Rosario,1,40000,Repuesto de tablero principal
+R-0051,Transmisor nivel ultrasónico,SENSOR,Siemens,ULTRA-01,EXTERNAL,PRV-016,Analítica SRL,5,310.00,USD,4,9,CABA,1,30000,Para tanques de agua tratada
+R-0052,Filtro separador aire-aceite compresor,FILTRO,Atlas Copco,FS-AC-01,EXTERNAL,PRV-007,Compresores Patagónicos,5,68.00,USD,8,6,Comodoro Rivadavia,1,6000,Indispensable para línea de aire
+R-0053,Valve solenoide 110VAC 1/2",NEUMATICA,SMC,VS-110-12,EXTERNAL,PRV-009,Neumática Industrial SA,5,54.00,USD,20,5,Buenos Aires,1,10000,Alto desempeño
+R-0054,Sello mecánico viton 25mm,MECANICO,John Crane,SM-25V,EXTERNAL,PRV-006,Bombas Industriales SA,5,89.00,USD,10,7,San Martín (GBA),1,15000,Apto para fluidos corrosivos
+R-0055,Manómetro 0–25 bar 1/4",INSTRUMENTO,Wika,MAN-25B,INTERNAL,INT-ALM-CENTRAL,Almacén Central,4,19.50,USD,6,1,Depósito Central,1,5000,Revisión anual recomendada
+R-0056,Interruptor seccionador 63A,ELECTRICO,ABB,IS-63A,EXTERNAL,PRV-008,Materiales Eléctricos Centro,3,32.00,USD,18,3,Mendoza,1,18000,Instalación en tableros principales
+R-0057,Arrancador estrella-triángulo 7.5kW,ELECTRICO,Siemens,ST-75,EXTERNAL,PRV-005,Automatización del Sur,5,220.00,USD,3,9,Rosario,1,30000,Para motores de bombas
+R-0058,Correa Poly-V 6PK1200,CORREA,Gates,6PK1200,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,11.20,USD,12,1,Depósito Sede 2,1,10000,Usada en alternadores
+R-0059,Caja reductora 1/30 eje hueco,MECANICO,Bonfiglioli,RF-30H,EXTERNAL,PRV-015,Motores del Sur SA,5,340.00,USD,2,12,Río Negro,1,40000,Entrega bajo pedido
+R-0060,Kit junta hidráulica 50mm,MECANICO,Parker,KJ-HID-50,EXTERNAL,PRV-011,Hidráulica del Oeste,5,28.00,USD,15,6,San Juan,1,8000,Para cilindros estándar
+R-0061,Electroválvula compresor 220VAC,NEUMATICA,Atlas Copco,EV-AC-220,EXTERNAL,PRV-007,Compresores Patagónicos,5,92.00,USD,4,6,Comodoro Rivadavia,1,12000,Repuesto original
+R-0062,Sensor inductivo M12 PNP,SENSOR,IFM,IND-M12,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,29.00,USD,10,1,Depósito Central,1,30000,Alta confiabilidad
+R-0063,Sensor inductivo M8 NPN,SENSOR,IFM,IND-M8,EXTERNAL,PRV-012,Vacuumparts SA,4,17.80,USD,25,7,Buenos Aires,2,20000,Compatible con líneas automáticas
+R-0064,Controlador PID universal 1/16 DIN,INSTRUMENTO,Autonics,PID-1/16,EXTERNAL,PRV-016,Analítica SRL,5,74.00,USD,6,8,CABA,1,25000,Para hornos y procesos térmicos
+R-0065,Transmisor temperatura 4-20mA,SENSOR,Siemens,TT-420,EXTERNAL,PRV-005,Automatización del Sur,5,68.00,USD,10,7,Rosario,1,20000,Incluye calibración inicial
+R-0066,Motor monofásico 2 HP,MECANICO,WEG,MOT-2HP,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,240.00,USD,1,1,Depósito Sede 2,1,30000,Para ventiladores industriales
+R-0067,Kit reparación válvula bola 2”,MECANICO,Genérico,KR-VB-2,EXTERNAL,PRV-014,Transportadoras Norte,4,15.50,USD,30,5,Tucumán,1,5000,Económico
+R-0068,Gabinete metálico IP55 400x300,ELECTRICO,Genérico,GAB-4030,EXTERNAL,PRV-008,Materiales Eléctricos Centro,3,52.00,USD,14,4,Mendoza,1,30000,Para tableros secundarios
+R-0069,Variador 0.75 kW trifásico,ELECTRICO,Schneider,ATV12-0.75,EXTERNAL,PRV-005,Automatización del Sur,5,185.00,USD,5,7,Rosario,1,30000,Eficiente para motores pequeños
+R-0070,Rodamiento cónico 30210,RODAMIENTO,Timken,30210,EXTERNAL,PRV-001,Distribuidora Rodamax,4,18.00,USD,60,5,Prov. Buenos Aires,3,15000,Alta durabilidad
+R-0071,Correa trapezoidal SPZ 850,CORREA,Gates,SPZ850,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,7.20,USD,11,1,Depósito Central,1,8000,Reemplazo rápido
+R-0072,Electroválvula 24V para agua,NEUMATICA,SMC,EVW-24,EXTERNAL,PRV-009,Neumática Industrial SA,5,47.50,USD,18,4,Buenos Aires,1,10000,Alta resistencia
+R-0073,Acople cardan pequeño,MECANICO,KTR,CARD-P,EXTERNAL,PRV-006,Bombas Industriales SA,5,33.00,USD,6,10,San Martín (GBA),1,15000,Usado en agitadores
+R-0074,Controlador variador remoto,ELECTRICO,Schneider,CTRL-VAR,EXTERNAL,PRV-005,Automatización del Sur,4,55.00,USD,10,7,Rosario,1,20000,Permite control a distancia
+R-0075,Cable apantallado 2x1mm,ELECTRICO,Prysmian,CAB-AP-1,EXTERNAL,PRV-013,Cableado Argentino,4,1.80,USD,180,3,Córdoba,50,20000,Ideal para señales
+R-0076,Filtro línea neumática 1/2",NEUMATICA,Festo,FLN-12,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,14.80,USD,6,1,Depósito Sede 2,1,6000,Retiene partículas
+R-0077,Regulador de presión 1/4",NEUMATICA,Festo,REG-14,EXTERNAL,PRV-009,Neumática Industrial SA,5,21.00,USD,25,5,Buenos Aires,1,6000,Alta estabilidad
+R-0078,Final de carrera palanca larga,ELECTRICO,Omron,FC-PL,INTERNAL,INT-ALM-CENTRAL,Almacén Central,5,26.00,USD,5,1,Depósito Central,1,15000,Alta sensibilidad
+R-0079,Reflector LED 50W,ELECTRICO,Philips,LED-50,EXTERNAL,PRV-008,Materiales Eléctricos Centro,4,32.50,USD,20,4,Mendoza,2,20000,Para áreas exteriores
+R-0080,Batería sellada 12V 7Ah,ELECTRICO,Genérico,BATT-12V7,EXTERNAL,PRV-016,Analítica SRL,4,15.00,USD,40,5,CABA,1,5000,Para UPS y controladores
+R-0081,Sonda humedad 4-20mA,SENSOR,IFM,HUM-420,EXTERNAL,PRV-016,Analítica SRL,5,85.00,USD,8,8,CABA,1,20000,Para cámaras cerradas
+R-0082,Bomba manual hidráulica,MECANICO,Parker,BM-HID,EXTERNAL,PRV-011,Hidráulica del Oeste,5,110.00,USD,4,6,San Juan,1,20000,Para mantenimiento de campo
+R-0083,Kit purga compresor,FILTRO,Atlas Copco,PK-AC,EXTERNAL,PRV-007,Compresores Patagónicos,5,24.50,USD,20,6,Comodoro Rivadavia,1,4000,Cambio trimestral
+R-0084,Tablero pulsadores 22mm,ELECTRICO,Schneider,TB-22,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,5,19.00,USD,7,1,Depósito Sede 2,1,20000,Incluye luces piloto
+R-0085,Interruptor térmico 10A,ELECTRICO,ABB,IT-10A,EXTERNAL,PRV-008,Materiales Eléctricos Centro,3,9.80,USD,60,3,Mendoza,5,15000,Económico
+R-0086,Sensor magnético cilindro,SENSOR,Festo,SMAG-C,EXTERNAL,PRV-009,Neumática Industrial SA,5,14.00,USD,30,4,Buenos Aires,2,12000,Para automatismos
+R-0087,Transmisor CO2 industrial,SENSOR,Siemens,CO2-IND,EXTERNAL,PRV-016,Analítica SRL,5,145.00,USD,2,10,CABA,1,20000,Para ventilación industrial
+R-0088,Válvula de retención 1”,MECANICO,Genérico,VR-1,INTERNAL,INT-ALM-CENTRAL,Almacén Central,4,7.50,USD,20,1,Depósito Central,1,10000,Para agua y aire
+R-0089,Kit reparación bomba neumática,BOMBA,ARO,KIT-BN,EXTERNAL,PRV-009,Neumática Industrial SA,5,66.00,USD,15,5,Buenos Aires,1,12000,Repuesto crítico
+R-0090,Estructura soporte motor 5HP,MECANICO,Genérico,ESM-5HP,EXTERNAL,PRV-014,Transportadoras Norte,4,115.00,USD,4,8,Tucumán,1,30000,Acero reforzado
+R-0091,Kit junta válvula solenoide,NEUMATICA,SMC,KJ-SMC-01,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,6.00,USD,18,1,Depósito Sede 2,1,6000,Mantenimiento periódico
+R-0092,Módulo PLC entrada digital 24V,ELECTRICO,Siemens,DI-24V,EXTERNAL,PRV-005,Automatización del Sur,5,92.00,USD,7,7,Rosario,1,50000,Para ampliación de PLC
+R-0093,Módulo PLC salida digital 24V,ELECTRICO,Siemens,DO-24V,EXTERNAL,PRV-005,Automatización del Sur,5,98.00,USD,7,7,Rosario,1,50000,Complementa DI-24V
+R-0094,Sensor fotoeléctrico reflex,SENSOR,Omron,PHOTO-R,EXTERNAL,PRV-012,Vacuumparts SA,4,43.50,USD,20,6,Buenos Aires,1,15000,Ideal para cintas
+R-0095,Motor reductor 0.55kW,MECANICO,WEG,MR-055,EXTERNAL,PRV-015,Motores del Sur SA,5,295.00,USD,3,12,Río Negro,1,45000,Alta eficiencia
+R-0096,Cartucho filtro gas 1 micrón,FILTRO,Genérico,FG-1M,EXTERNAL,PRV-003,Proveedor Motores Sur,4,7.20,USD,30,5,Neuquén,5,3000,Cambio frecuente
+R-0097,Caja IP65 para sensores,ELECTRICO,Genérico,CAJA-IP65,INTERNAL,INT-ALM-CENTRAL,Almacén Central,4,6.80,USD,25,1,Depósito Central,1,20000,Apta exteriores
+R-0098,Malla porta cables 50mm,ELECTRICO,Genérico,MALLA-50,EXTERNAL,PRV-013,Cableado Argentino,4,2.60,USD,200,3,Córdoba,20,20000,Venta por metros
+R-0099,Soporte de rodamiento UCF205,MECANICO,SKF,UCF205,EXTERNAL,PRV-001,Distribuidora Rodamax,5,18.50,USD,25,6,Prov. Buenos Aires,1,15000,Alta demanda
+R-0100,Correa dentada T10-2000,CORREA,Gates,T10-2000,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,22.00,USD,2,1,Depósito Sede 2,1,15000,Para sincronización industrial
