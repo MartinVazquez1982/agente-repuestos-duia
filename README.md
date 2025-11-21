@@ -29,6 +29,23 @@ python -m venv venv
 source venv/bin/activate
 ```
 
+## Dependencias del Sistema
+
+### MongoDB Tools (macOS)
+```bash
+# Instalar MongoDB Database Tools
+brew tap mongodb/brew
+brew install mongodb-database-tools
+
+# Verificar instalación
+mongoimport --version
+```
+
+### MongoDB Shell (opcional)
+```bash
+brew install mongosh
+```
+
 ### 4. Instalar dependencias
 ```bash
 pip install -r requirements.txt
