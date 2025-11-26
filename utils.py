@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 def format_options_for_llm(codigo: str, opciones: List[Dict]) -> str:
     """
     Formatea las opciones de un repuesto para que el LLM las rankee.
