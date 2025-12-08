@@ -11,12 +11,17 @@ from nodes.process_order import process_order
 from nodes.process_internal_order import process_internal_order
 from nodes.generate_external_email import generate_external_email
 from nodes.process_both_type import process_both_types
+from nodes.schedule_delivery import schedule_delivery
+from nodes.check_stock_availability import check_stock_availability
+from nodes.handle_no_stock_response import handle_no_stock_response
 from routes.routes import (
     route_classification,
     route_after_extraction_check,
     need_external_search,
     route_after_selection,
-    route_by_product_type
+    route_by_product_type,
+    route_after_stock_check,
+    route_after_no_stock_response
 )
 from schemas.state import AgentState
 
@@ -67,20 +72,41 @@ def generate_agent():
         }
     )
 
-    # Desde semantic_search_internal: decidir si buscar externamente o ir a ranking
+    # Desde semantic_search_internal: decidir si buscar externamente o verificar stock
     graph_builder.add_conditional_edges(
         "semantic_search_internal",
         need_external_search,
         {
             "search_external": "semantic_search_external",
-            "reranking": "reranking"
+            "reranking": "check_stock_availability"  # Ambos caminos pasan por verificación de stock
         }
     )
 
-    # Desde semantic_search_external → reranking
-    graph_builder.add_edge("semantic_search_external", "reranking")
+    # Desde semantic_search_external → check_stock_availability
+    graph_builder.add_edge("semantic_search_external", "check_stock_availability")
+    
+    # Desde check_stock_availability → decidir si continuar o informar sin stock
+    graph_builder.add_conditional_edges(
+        "check_stock_availability",
+        route_after_stock_check,
+        {
+            "continue_ranking": "reranking",
+            "no_stock": "handle_no_stock_response"
+        }
+    )
+    
+    # Desde handle_no_stock_response → decidir si reiniciar o terminar
+    graph_builder.add_conditional_edges(
+        "handle_no_stock_response",
+        route_after_no_stock_response,
+        {
+            "restart": "extract_products_info",  # Volver a pedir productos
+            "end": END
+        }
+    )
+    
+    # Agregar interrupt ANTES de handle_no_stock_response para esperar respuesta del usuario
 
-    # Desde reranking → END
     # Nodo de Human in the Loop
     graph_builder.add_node("human_in_the_loop", human_in_the_loop_selection)
     graph_builder.add_node("process_selection", process_user_selection)
@@ -88,6 +114,9 @@ def generate_agent():
     graph_builder.add_node("process_internal_order", process_internal_order)
     graph_builder.add_node("generate_external_email", generate_external_email)
     graph_builder.add_node("process_both_types", process_both_types)
+    graph_builder.add_node("schedule_delivery", schedule_delivery)
+    graph_builder.add_node("check_stock_availability", check_stock_availability)
+    graph_builder.add_node("handle_no_stock_response", handle_no_stock_response)
 
     # Conexiones actualizadas
     graph_builder.add_edge("reranking", "human_in_the_loop")
@@ -117,15 +146,19 @@ def generate_agent():
         }
     )
 
-    # Después de cada tipo de procesamiento, terminar
-    graph_builder.add_edge("process_internal_order", END)
-    graph_builder.add_edge("generate_external_email", END)
-    graph_builder.add_edge("process_both_types", END)
+    # Después de cada tipo de procesamiento, ir a schedule_delivery
+    graph_builder.add_edge("process_internal_order", "schedule_delivery")
+    graph_builder.add_edge("generate_external_email", "schedule_delivery")
+    graph_builder.add_edge("process_both_types", "schedule_delivery")
+    
+    # Después de agendar, terminar
+    graph_builder.add_edge("schedule_delivery", END)
 
     # Compilar el grafo
     graph = graph_builder.compile(
         checkpointer=memory,
-        interrupt_after=["human_in_the_loop"]  # Pausa DESPUÉS de presentar opciones al usuario
+        interrupt_before=["handle_no_stock_response"],  # Pausa ANTES de procesar respuesta sin stock
+        interrupt_after=["human_in_the_loop"]  # Pausa DESPUÉS de mostrar ranking
     )
     
     return graph

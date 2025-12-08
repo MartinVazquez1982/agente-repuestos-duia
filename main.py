@@ -41,7 +41,7 @@ if __name__ == "__main__":
     
     #mensaje_usuario = input("\n👤 Tú: ")
     mensaje_usuario = "Necesito un Rodamiento rígido de bolas modelo 6204 2RS y dos Kits reparación válvula"
-    
+    #mensaje_usuario = "Necesito el filtro Atlas Copco modelo AC-250 para compresor de 250 m3/h"
     # Estado inicial con todos los campos
     estado_inicial = {
         "messages": [HumanMessage(mensaje_usuario)],
@@ -81,12 +81,47 @@ if __name__ == "__main__":
         if ultimo_mensaje_agente:
             print(f"\n🤖 Agente: {ultimo_mensaje_agente}")
         
-        # Verificar si hay un interrupt (Human in the Loop)
+        # Verificar si hay un interrupt (Human in the Loop o Sin Stock)
         snapshot = graph.get_state(config)
         proximos_nodos = snapshot.next if hasattr(snapshot, 'next') else []
         
+        # Verificar si no hay stock disponible (el nodo check_stock_availability lo detectó)
+        tiene_stock = result.get("tiene_stock_disponible")
+        
+        # Si el grafo está pausado porque no hay stock (interrupt_before handle_no_stock_response)
+        if proximos_nodos and "handle_no_stock_response" in proximos_nodos and tiene_stock == False:
+            print(f"\n{'─'*60}")
+            nuevo_mensaje = input("\n👤 Tu respuesta: ").strip()
+            
+            if nuevo_mensaje.lower() in ["salir", "exit", "quit"]:
+                print("\n👋 Conversación terminada")
+                break
+            
+            # Actualizar el estado
+            graph.update_state(config, {
+                "messages": [HumanMessage(content=nuevo_mensaje)]
+            })
+            
+            # Continuar desde donde se pausó
+            result = graph.invoke(None, config)
+            
+            # Verificar si el usuario quiere reiniciar
+            reiniciar = result.get("reiniciar_busqueda", False)
+            
+            if reiniciar:
+                # Mostrar mensaje del agente y continuar el loop
+                mensajes_actuales = result.get("messages", [])
+                for msg in reversed(mensajes_actuales):
+                    if isinstance(msg, AIMessage):
+                        print(f"\n🤖 Agente: {msg.content}")
+                        break
+                continue
+            else:
+                # Usuario canceló, terminar
+                break
+        
         # Si el grafo está pausado después de human_in_the_loop
-        if proximos_nodos and "process_selection" in proximos_nodos:
+        elif proximos_nodos and "process_selection" in proximos_nodos:
             # Loop hasta obtener una selección válida
             while True:
                 print(f"\n{'─'*60}")

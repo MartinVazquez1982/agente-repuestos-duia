@@ -19,7 +19,7 @@ def semantic_search_internal(state: AgentState) -> AgentState:
     codigos_unicos_global = set()
     codigos_encontrados_global = []
     productos_sin_resultados = []
-    resultados_por_codigo = {}  # Para el reranking
+    resultados_por_producto = {}  # Para el reranking - agrupado por índice de producto
     mensaje_productos = ""
     
     for idx, product_req in enumerate(product_requests, 1):
@@ -80,12 +80,25 @@ def semantic_search_internal(state: AgentState) -> AgentState:
                 if r.get('score', 0) >= 0.50 and r.get('stock_disponible', 0) > 0
             ]
             
+            # Guardar resultados sin stock (para búsqueda externa por código)
+            resultados_sin_stock = [
+                r for r in resultados 
+                if r.get('score', 0) >= 0.50 and r.get('stock_disponible', 0) == 0
+            ]
+            
             if not resultados_con_stock:
+                # Extraer códigos de productos sin stock
+                codigos_sin_stock = [r.get('id_repuesto') for r in resultados_sin_stock if r.get('id_repuesto')]
+                
                 print(f"   ⚠️  Encontrado pero sin stock disponible\n")
+                if codigos_sin_stock:
+                    print(f"      Códigos sin stock: {', '.join(codigos_sin_stock)}\n")
+                
                 productos_sin_resultados.append({
                     "idx": idx,
                     "name": product_query,
-                    "product_req": product_req
+                    "product_req": product_req,
+                    "codigos_sin_stock": codigos_sin_stock  # ← NUEVO: códigos para búsqueda externa
                 })
                 mensaje_productos += f"**{idx}. {product_query}**\n   ⚠️  Sin stock interno\n\n"
                 continue
@@ -100,9 +113,9 @@ def semantic_search_internal(state: AgentState) -> AgentState:
                 repuesto = Repuesto(
                     id_repuesto=r['id_repuesto'],
                     repuesto_descripcion=r['repuesto_descripcion'],
-                    marca=r.get('marca', 'N/A'),
-                    modelo=r.get('modelo', 'N/A'),
-                    categoria=r.get('categoria', 'N/A'),
+                    marca=str(r.get('marca', 'N/A')),
+                    modelo=str(r.get('modelo', 'N/A')),
+                    categoria=str(r.get('categoria', 'N/A')),
                     score=r.get('score', 0)
                 )
                 
@@ -112,11 +125,10 @@ def semantic_search_internal(state: AgentState) -> AgentState:
                     codigos_encontrados_global.append(repuesto.id_repuesto)
                     codigos_unicos_global.add(repuesto.id_repuesto)
                 
-                # Guardar en formato para reranking
-                codigo = repuesto.id_repuesto
-                if codigo not in resultados_por_codigo:
-                    resultados_por_codigo[codigo] = []
-                resultados_por_codigo[codigo].append(r)
+                # Guardar en formato para reranking - AGRUPAR POR PRODUCTO SOLICITADO
+                if idx not in resultados_por_producto:
+                    resultados_por_producto[idx] = []
+                resultados_por_producto[idx].append(r)
                 
                 stock = r.get('stock_disponible', 0)
                 proveedor = r.get('proveedor_nombre', 'N/A')                
@@ -148,13 +160,15 @@ def semantic_search_internal(state: AgentState) -> AgentState:
         "codigos_repuestos": codigos_encontrados_global,
         "repuestos_encontrados": todos_repuestos,
         "productos_sin_match_interno": productos_sin_resultados,
-        "resultados_internos": resultados_por_codigo,  # Para el reranking
+        "resultados_internos": resultados_por_producto,  # Para el reranking - agrupado por producto
         "info_completa": True
     }
     
 def semantic_search_external(state: AgentState) -> AgentState:
     """
-    Búsqueda semántica SOLO en proveedores EXTERNOS.
+    Búsqueda HÍBRIDA en proveedores EXTERNOS.
+    - Si hay códigos sin stock: búsqueda por código (precisa)
+    - Si NO hay códigos: búsqueda semántica (cobertura)
     Solo busca productos que NO se encontraron internamente.
     """
         
@@ -169,57 +183,123 @@ def semantic_search_external(state: AgentState) -> AgentState:
     repuestos_externos = list(state.get("repuestos_encontrados", []))
     codigos_existentes = set(state.get("codigos_repuestos", []))
     codigos_externos = []
-    resultados_externos_por_codigo = {}  # Para el reranking
+    resultados_externos_por_producto = {}  # Para el reranking - agrupado por producto
     mensaje_externos = ""
     
     for item in productos_sin_match:
         product_query = item.get("name", "")
         idx = item.get("idx", "")
+        codigos_sin_stock = item.get("codigos_sin_stock", [])
+        
+        # BÚSQUEDA HÍBRIDA: Por código si existe, sino semántica
+        if codigos_sin_stock:
+            # ═══════════════════════════════════════════════════════
+            # CASO A: BÚSQUEDA POR CÓDIGO (más precisa y rápida)
+            # ═══════════════════════════════════════════════════════
+            print(f"   🔍 Búsqueda por código: {', '.join(codigos_sin_stock)}")
+            
+            resultados = []
+            for codigo in codigos_sin_stock:
+                pipeline = [
+                    {
+                        "$match": {
+                            "id_repuesto": codigo,
+                            "proveedor_tipo": "EXTERNAL"
+                        }
+                    },
+                    {
+                        "$project": {
+                            "id_repuesto": 1,
+                            "repuesto_descripcion": 1,
+                            "categoria": 1,
+                            "marca": 1,
+                            "modelo": 1,
+                            "proveedor_tipo": 1,
+                            "proveedor_nombre": 1,
+                            "costo_unitario": 1,
+                            "lead_time_dias": 1
+                        }
+                    }
+                ]
                 
-        query_embedding = model.encode(product_query).tolist()
-        
-        # Pipeline con FILTRO EXTERNO
-        pipeline = [
-            {
-                "$vectorSearch": {
-                    "index": "vector_index_repuestos",
-                    "path": "embedding_vector",
-                    "queryVector": query_embedding,
-                    "numCandidates": 100,
-                    "limit": 5
+                try:
+                    resultados_codigo = list(MongoCollectionManager().get_collection().aggregate(pipeline))
+                    resultados.extend(resultados_codigo)
+                    if resultados_codigo:
+                        print(f"      ✅ {codigo}: {len(resultados_codigo)} proveedor(es) externo(s)")
+                    else:
+                        print(f"      ❌ {codigo}: No disponible en externos")
+                except Exception as e:
+                    print(f"      ❌ Error buscando {codigo}: {e}")
+            
+            # Asignar score=1.0 para búsquedas por código (match exacto)
+            for r in resultados:
+                r['score'] = 1.0
+                
+        else:
+            # ═══════════════════════════════════════════════════════
+            # CASO B: BÚSQUEDA SEMÁNTICA (fallback sin código)
+            # ═══════════════════════════════════════════════════════
+            print(f"   🔍 Búsqueda semántica: '{product_query}'")
+            
+            query_embedding = model.encode(product_query).tolist()
+            
+            # Pipeline con FILTRO EXTERNO
+            pipeline = [
+                {
+                    "$vectorSearch": {
+                        "index": "vector_index_repuestos",
+                        "path": "embedding_vector",
+                        "queryVector": query_embedding,
+                        "numCandidates": 100,
+                        "limit": 5
+                    }
+                },
+                {
+                    "$project": {
+                        "id_repuesto": 1,
+                        "repuesto_descripcion": 1,
+                        "categoria": 1,
+                        "marca": 1,
+                        "modelo": 1,
+                        "proveedor_tipo": 1,
+                        "proveedor_nombre": 1,
+                        "costo_unitario": 1,
+                        "lead_time_dias": 1,
+                        "score": {"$meta": "vectorSearchScore"}
+                    }
                 }
-            },
-            {
-                "$project": {
-                    "id_repuesto": 1,
-                    "repuesto_descripcion": 1,
-                    "categoria": 1,
-                    "marca": 1,
-                    "modelo": 1,
-                    "proveedor_tipo": 1,
-                    "proveedor_nombre": 1,
-                    "costo_unitario": 1,
-                    "lead_time_dias": 1,
-                    "score": {"$meta": "vectorSearchScore"}
-                }
-            }
-        ]
+            ]
+            
+            try:
+                resultados_raw = list(MongoCollectionManager().get_collection().aggregate(pipeline))
+                
+                # Filtrar por proveedor_tipo DESPUÉS de la búsqueda
+                resultados = [r for r in resultados_raw if r.get('proveedor_tipo') == 'EXTERNAL']
+            except Exception as e:
+                print(f"      ❌ Error en búsqueda semántica: {e}")
+                resultados = []
         
+        # ═══════════════════════════════════════════════════════
+        # PROCESAMIENTO DE RESULTADOS (común para ambos casos)
+        # ═══════════════════════════════════════════════════════
         try:
-            resultados_raw = list(MongoCollectionManager().get_collection().aggregate(pipeline))
-            
-            # Filtrar por proveedor_tipo DESPUÉS de la búsqueda
-            resultados = [r for r in resultados_raw if r.get('proveedor_tipo') == 'EXTERNAL']
-            
             if not resultados:
                 print(f"   ❌ No encontrado en externos\n")
                 mensaje_externos += f"**{idx}. {product_query}**\n   ❌ No disponible\n\n"
                 continue
             
-            # Filtrar por score
+            # Filtrar por score (búsqueda por código ya tiene score=1.0)
             resultados_validos = [r for r in resultados if r.get('score', 0) >= 0.50]
+            
+            if not resultados_validos:
+                print(f"   ❌ Sin resultados válidos (score < 0.50)\n")
+                mensaje_externos += f"**{idx}. {product_query}**\n   ❌ No disponible\n\n"
+                continue
                         
-            mensaje_externos += f"**{idx}. {product_query}**\n"
+            # Indicar tipo de búsqueda en el mensaje
+            tipo_busqueda = "🔢 Por código" if codigos_sin_stock else "🔍 Semántica"
+            mensaje_externos += f"**{idx}. {product_query}** ({tipo_busqueda})\n"
             
             for i, r in enumerate(resultados_validos[:3], 1):  # Top 3
                 if '_id' in r:
@@ -228,9 +308,9 @@ def semantic_search_external(state: AgentState) -> AgentState:
                 repuesto = Repuesto(
                     id_repuesto=r['id_repuesto'],
                     repuesto_descripcion=r['repuesto_descripcion'],
-                    marca=r.get('marca', 'N/A'),
-                    modelo=r.get('modelo', 'N/A'),
-                    categoria=r.get('categoria', 'N/A'),
+                    marca=str(r.get('marca', 'N/A')),
+                    modelo=str(r.get('modelo', 'N/A')),
+                    categoria=str(r.get('categoria', 'N/A')),
                     score=r.get('score', 0)
                 )
                 
@@ -240,11 +320,10 @@ def semantic_search_external(state: AgentState) -> AgentState:
                     codigos_externos.append(repuesto.id_repuesto)
                     codigos_existentes.add(repuesto.id_repuesto)
                 
-                # Guardar en formato para reranking
-                codigo = repuesto.id_repuesto
-                if codigo not in resultados_externos_por_codigo:
-                    resultados_externos_por_codigo[codigo] = []
-                resultados_externos_por_codigo[codigo].append(r)
+                # Guardar en formato para reranking - AGRUPAR POR PRODUCTO SOLICITADO
+                if idx not in resultados_externos_por_producto:
+                    resultados_externos_por_producto[idx] = []
+                resultados_externos_por_producto[idx].append(r)
                 
                 proveedor = r.get('proveedor_nombre', 'N/A')
                 lead_time = r.get('lead_time_dias', 'N/A')                
@@ -267,5 +346,5 @@ def semantic_search_external(state: AgentState) -> AgentState:
         "messages": [AIMessage(content=mensaje)],
         "codigos_repuestos": todos_codigos,
         "repuestos_encontrados": repuestos_externos,
-        "resultados_externos": resultados_externos_por_codigo  # Para el reranking
+        "resultados_externos": resultados_externos_por_producto  # Para el reranking - agrupado por producto
     }

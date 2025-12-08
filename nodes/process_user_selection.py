@@ -3,6 +3,17 @@ from langchain_core.messages import AIMessage, HumanMessage
 from chains.chain_administrator import ChainAdministrator
 from schemas.structure_outputs import UserSelectionIntent
 
+def find_codigo_in_results(codigo: str, resultados_por_producto: dict) -> tuple:
+    """
+    Busca un código en los resultados agrupados por producto.
+    Retorna (info, tipo, idx_producto) o (None, None, None) si no se encuentra.
+    """
+    for idx_producto, opciones in resultados_por_producto.items():
+        for opcion in opciones:
+            if opcion.get('id_repuesto') == codigo:
+                return opcion, idx_producto
+    return None, None
+
 def process_user_selection(state: AgentState) -> AgentState:
     """
     Procesa la selección del usuario usando LLM para interpretar su intención.
@@ -60,8 +71,7 @@ def process_user_selection(state: AgentState) -> AgentState:
         print(f"❌ Usuario canceló el pedido")
         
         mensaje = "❌ **Pedido cancelado**\n\n"
-        mensaje += "Entendido, no se procesará ningún pedido.\n"
-        mensaje += "¿Hay algo más en lo que pueda ayudarte?"
+        mensaje += "Entendido, no se procesará ningún pedido."
         
         return {
             "messages": [AIMessage(content=mensaje)],
@@ -91,14 +101,15 @@ def process_user_selection(state: AgentState) -> AgentState:
             
             mensaje += f"\n✅ **Opciones disponibles:**\n\n"
             for codigo in codigos_disponibles:
-                info_interno = resultados_internos.get(codigo, [])
-                info_externo = resultados_externos.get(codigo, [])
+                # Buscar el código en los resultados internos o externos
+                info_interno, _ = find_codigo_in_results(codigo, resultados_internos)
+                info_externo, _ = find_codigo_in_results(codigo, resultados_externos)
                 
                 if info_interno:
-                    info = info_interno[0]
+                    info = info_interno
                     tipo = "INTERNO"
                 elif info_externo:
-                    info = info_externo[0]
+                    info = info_externo
                     tipo = "EXTERNO"
                 else:
                     continue
@@ -143,18 +154,20 @@ def process_user_selection(state: AgentState) -> AgentState:
     
     tiene_internos = False
     tiene_externos = False
+    selecciones_detalladas = []
     
     for codigo in codigos_validos:
-        info_interno = resultados_internos.get(codigo, [])
-        info_externo = resultados_externos.get(codigo, [])
+        # Buscar el código en los resultados internos o externos
+        info_interno, idx_interno = find_codigo_in_results(codigo, resultados_internos)
+        info_externo, idx_externo = find_codigo_in_results(codigo, resultados_externos)
         
         if info_interno:
             tipo = "INTERNO"
-            info = info_interno[0]
+            info = info_interno
             tiene_internos = True
         elif info_externo:
             tipo = "EXTERNO"
-            info = info_externo[0]
+            info = info_externo
             tiene_externos = True
         else:
             continue
@@ -167,6 +180,18 @@ def process_user_selection(state: AgentState) -> AgentState:
         mensaje_final += f"   └─ {desc}\n"
         mensaje_final += f"   └─ Marca: {marca}\n"
         mensaje_final += f"   └─ Proveedor: {proveedor}\n\n"
+        
+        # Guardar selección detallada
+        selecciones_detalladas.append({
+            "codigo": codigo,
+            "tipo": tipo,
+            "descripcion": desc,
+            "marca": marca,
+            "proveedor": proveedor,
+            "precio": info.get('costo_unitario', 0),
+            "stock": info.get('stock_disponible', 0),
+            "lead_time": info.get('lead_time_dias', 0)
+        })
     
     # Determinar tipo de orden
     if tiene_internos and tiene_externos:
@@ -181,7 +206,7 @@ def process_user_selection(state: AgentState) -> AgentState:
     
     return {
         "messages": [AIMessage(content=mensaje_final)],
-        "selecciones_usuario": [{"codigo": c, "tipo": tipo_orden} for c in codigos_validos],
+        "selecciones_usuario": selecciones_detalladas,
         "repuestos_seleccionados": True,
         "tipo_orden": tipo_orden
     }

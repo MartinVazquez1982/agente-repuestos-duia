@@ -66,3 +66,25 @@ def route_by_product_type(state: AgentState) -> str:
         return "external_only"  # Solo externos
     else:
         return "end"
+
+def route_after_stock_check(state: AgentState) -> str:
+    """
+    Decide si continuar con el ranking o informar que no hay stock.
+    """
+    tiene_stock = state.get("tiene_stock_disponible", True)
+    
+    if tiene_stock:
+        return "continue_ranking"  # Hay stock, continuar con ranking
+    else:
+        return "no_stock"  # No hay stock, informar al usuario
+
+def route_after_no_stock_response(state: AgentState) -> str:
+    """
+    Decide si reiniciar la búsqueda o terminar.
+    """
+    reiniciar = state.get("reiniciar_busqueda", False)
+    
+    if reiniciar:
+        return "restart"  # Volver al inicio para nueva búsqueda
+    else:
+        return "end"  # Terminar el flujo

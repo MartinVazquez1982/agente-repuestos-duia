@@ -7,16 +7,17 @@ def generate_ranking(state: AgentState) -> AgentState:
     """
     from utils import format_options_for_llm
     
-    codigos = state.get("codigos_repuestos", [])
+    product_requests = state.get("product_requests", [])
     resultados_internos = state.get("resultados_internos", {})
     resultados_externos = state.get("resultados_externos", {})
     
     # Preparar información para el LLM
     opciones_para_llm = []
     
-    for codigo in codigos:
-        internos = resultados_internos.get(codigo, [])
-        externos = resultados_externos.get(codigo, [])
+    for idx, product_req in enumerate(product_requests, 1):
+        product_name = product_req.get("name", f"Producto {idx}")
+        internos = resultados_internos.get(idx, [])
+        externos = resultados_externos.get(idx, [])
         
         # Combinar todas las opciones
         todas_opciones = []
@@ -27,9 +28,9 @@ def generate_ranking(state: AgentState) -> AgentState:
             todas_opciones.append({**opcion, "tipo": "EXTERNO"})
             
         if todas_opciones:
-            # Formatear para el LLM
+            # Formatear para el LLM con nombre del producto solicitado
             opciones_para_llm.append(
-                format_options_for_llm(codigo, todas_opciones)
+                format_options_for_llm(f"PRODUCTO {idx}: {product_name}", todas_opciones)
             )
     
     if not opciones_para_llm:

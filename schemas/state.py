@@ -21,11 +21,11 @@ class AgentState(TypedDict):
     # Resultados de búsqueda semántica
     semantic_results: Optional[List[Dict]]  # Candidatos de búsqueda semántica
 
-    # Resultados de la búsqueda interna
-    resultados_internos: Optional[Dict[str, List[Dict]]]  
-
-    # Resultados de la búsqueda externa
-    resultados_externos: Optional[Dict[str, List[Dict]]]
+    # Resultados de la búsqueda interna (agrupados por índice de producto solicitado)
+    resultados_internos: Optional[Dict[int, List[Dict]]]  
+    
+    # Resultados de la búsqueda externa (agrupados por índice de producto solicitado)
+    resultados_externos: Optional[Dict[int, List[Dict]]]
 
     # Análisis de disponibilidad por código
     disponibilidad: Optional[Dict[str, str]]  # {"R-0001": "full", "R-0002": "none"}
@@ -37,3 +37,7 @@ class AgentState(TypedDict):
     # Human in the loop
     selecciones_usuario: Optional[List[Dict]]  # Selecciones del usuario después del ranking
     repuestos_seleccionados: bool  # True cuando el usuario ha seleccionado productos válidos
+    
+    # Control de stock
+    tiene_stock_disponible: Optional[bool]  # True si hay stock en alguna opción
+    reiniciar_busqueda: Optional[bool]  # True si el usuario quiere hacer una nueva búsqueda

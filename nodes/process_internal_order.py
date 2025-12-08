@@ -1,19 +1,15 @@
 from schemas.state import AgentState
-from langchain_core.messages import AIMessage
 
 def process_internal_order(state: AgentState) -> AgentState:
     """
-    Genera orden de retiro de inventario para productos INTERNOS.
-    Notifica al almacén para preparación.
+    Imprime orden de compra interna para productos INTERNOS.
+    NO agrega mensajes al state, solo hace print directo.
     """
     selecciones = state.get("selecciones_usuario", [])
     internos = [s for s in selecciones if s['tipo'] == 'INTERNO']
     
     if not internos:
-        return {
-            "messages": [AIMessage(content="⚠️ No hay productos internos para procesar")]
-        }
-    
+        return {}
     
     # Agrupar por almacén
     por_almacen = {}
@@ -23,61 +19,34 @@ def process_internal_order(state: AgentState) -> AgentState:
             por_almacen[almacen] = []
         por_almacen[almacen].append(prod)
     
-    mensaje = "═" * 80 + "\n"
-    mensaje += "📦 **ORDEN DE RETIRO DE INVENTARIO**\n"
-    mensaje += "═" * 80 + "\n\n"
+    # PRINT DIRECTO (no mensaje al state)
+    print("\n" + "═" * 80)
+    print("🖨️  IMPRIMIENDO ORDEN DE COMPRA INTERNA...")
+    print("═" * 80 + "\n")
     
     total_general = 0
     
     for almacen, productos in por_almacen.items():
-        mensaje += f"🏢 **ALMACÉN: {almacen}**\n"
-        mensaje += "─" * 80 + "\n\n"
-        
-        subtotal_almacen = 0
+        print(f"🏢 ALMACÉN: {almacen}")
+        print("─" * 80)
         
         for i, prod in enumerate(productos, 1):
             precio = prod.get('precio', 0)
             stock = prod.get('stock', 'N/A')
             lead_time = prod.get('lead_time', 1)
-            
-            subtotal_almacen += precio
             total_general += precio
             
-            mensaje += f"{i}. **{prod['codigo']}**\n"
-            mensaje += f"   📝 Descripción: {prod['descripcion']}\n"
-            mensaje += f"   📦 Cantidad a retirar: 1 unidad\n"
-            mensaje += f"   💰 Valor: ${precio:.2f}\n"
-            mensaje += f"   📊 Stock disponible: {stock} unidades\n"
-            mensaje += f"   ⏱️  Tiempo de preparación: {lead_time} día{'s' if lead_time != 1 else ''}\n\n"
+            print(f"\n{i}. {prod['codigo']} - {prod['descripcion']}")
+            print(f"   📦 Cantidad: 1 unidad")
+            print(f"   💰 Valor: ${precio:.2f}")
+            print(f"   📊 Stock disponible: {stock} unidades")
+            print(f"   ⏱️  Preparación: {lead_time} día{'s' if lead_time != 1 else ''}")
         
-        mensaje += f"💰 **Subtotal {almacen}:** ${subtotal_almacen:.2f}\n"
-        mensaje += "─" * 80 + "\n\n"
+        print()
     
-    # Resumen
-    mensaje += "📋 **RESUMEN DE LA ORDEN**\n"
-    mensaje += "─" * 80 + "\n"
-    mensaje += f"   Total de productos: {len(internos)}\n"
-    mensaje += f"   Almacenes involucrados: {len(por_almacen)}\n"
-    mensaje += f"   Valor total: ${total_general:.2f}\n\n"
+    print(f"💰 VALOR TOTAL: ${total_general:.2f}")
+    print("✅ Orden de compra interna generada")
+    print("═" * 80 + "\n")
     
-    # Próximos pasos
-    mensaje += "🔔 **NOTIFICACIÓN AL ALMACÉN**\n"
-    mensaje += "─" * 80 + "\n"
-    for almacen in por_almacen.keys():
-        mensaje += f"✅ Notificación enviada a: {almacen}\n"
-    mensaje += "\n"
-    
-    mensaje += "📌 **INSTRUCCIONES:**\n"
-    mensaje += "1. Preparar productos para retiro\n"
-    mensaje += "2. Verificar estado y calidad\n"
-    mensaje += "3. Embalar y etiquetar\n"
-    mensaje += "4. Notificar cuando esté listo\n\n"
-    
-    mensaje += "═" * 80 + "\n"
-    mensaje += "✅ **Orden de retiro generada exitosamente**\n"
-    mensaje += "═" * 80
-    
-    
-    return {
-        "messages": [AIMessage(content=mensaje)]
-    }
+    # No retorna mensaje, el resumen lo hará schedule_delivery
+    return {}

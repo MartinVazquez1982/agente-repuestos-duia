@@ -1,24 +1,19 @@
 from typing import List, Dict
 
-def format_options_for_llm(codigo: str, opciones: List[Dict]) -> str:
+def format_options_for_llm(producto_label: str, opciones: List[Dict]) -> str:
     """
-    Formatea las opciones de un repuesto para que el LLM las rankee.
+    Formatea las opciones de un producto solicitado para que el LLM las rankee.
     Presenta TODAS las opciones sin orden previo.
     """
     if not opciones:
-        return f"REPUESTO: {codigo}\nNo hay opciones disponibles.\n"
+        return f"{producto_label}\nNo hay opciones disponibles.\n"
     
     # Información del repuesto (de la primera opción)
     primera = opciones[0]
     
     texto = f"═══════════════════════════════════════════════════════════════\n"
-    texto += f"REPUESTO: {codigo}\n"
+    texto += f"{producto_label}\n"
     texto += f"═══════════════════════════════════════════════════════════════\n"
-    texto += f"Descripción: {primera.get('repuesto_descripcion', 'N/A')}\n"
-    texto += f"Categoría: {primera.get('categoria', 'N/A')}\n"
-    texto += f"Marca: {primera.get('marca', 'N/A')}\n"
-    texto += f"Modelo: {primera.get('modelo', 'N/A')}\n"
-    texto += f"Vida útil estimada: {primera.get('tiempo_vida_estimado_hrs', 'N/A')} horas\n"
     texto += f"\n"
     texto += f"OPCIONES DISPONIBLES ({len(opciones)} total):\n"
     texto += f"───────────────────────────────────────────────────────────────\n"
@@ -27,6 +22,11 @@ def format_options_for_llm(codigo: str, opciones: List[Dict]) -> str:
         tipo_emoji = "🏢" if opcion["tipo"] == "INTERNO" else "🌐"
         
         texto += f"\nOpción {i}: {tipo_emoji} {opcion.get('proveedor_nombre', 'N/A')}\n"
+        texto += f"  • Código: {opcion.get('id_repuesto', 'N/A')}\n"
+        texto += f"  • Descripción: {opcion.get('repuesto_descripcion', 'N/A')}\n"
+        texto += f"  • Categoría: {opcion.get('categoria', 'N/A')}\n"
+        texto += f"  • Marca: {opcion.get('marca', 'N/A')}\n"
+        texto += f"  • Modelo: {opcion.get('modelo', 'N/A')}\n"
         texto += f"  • Tipo: {opcion['tipo']}\n"
         texto += f"  • Proveedor ID: {opcion.get('proveedor_id', 'N/A')}\n"
         texto += f"  • Rating: {opcion.get('proveedor_rating', 0)}/5 estrellas\n"

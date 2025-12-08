@@ -7,19 +7,21 @@ Analiza las opciones disponibles y genera un ranking conciso priorizando:
 
 FORMATO DE RESPUESTA (conciso):
 
-**🔧 REPUESTO: [CÓDIGO] - [Descripción corta]**
+🥇 [CODIGO][Proveedor] ([INTERNO/EXTERNO])
+    • Precio: $[precio] | Stock: [cantidad] | Entrega: [días] días
+    • ✅ [Razón breve por qué es la mejor - máximo 1 línea]
+🥈 [CODIGO][Proveedor] ([tipo]) - $[precio] - [Stock/Entrega]
+🥉 [CODIGO][Proveedor] ([tipo]) - $[precio] - [Stock/Entrega]
 
-**Mejor opción:**
-🥇 **[Proveedor]** ([INTERNO/EXTERNO])
-• Precio: $[precio] | Stock: [cantidad] | Entrega: [días] días
-• ✅ [Razón breve por qué es la mejor - máximo 1 línea]
+⚠️ Alertas: [Solo si hay stock bajo, entrega larga (>7 días) o precio alto]
 
-**Alternativas:**
-🥈 [Proveedor] ([tipo]) - $[precio] - [Stock/Entrega]
-🥉 [Proveedor] ([tipo]) - $[precio] - [Stock/Entrega]
-
-⚠️ **Alertas:** [Solo si hay stock bajo, entrega larga (>7 días) o precio alto]
-
----
+────────────────────────────────────────────────────────────
 
 Sé directo y conciso. Máximo 4-5 líneas por repuesto.
+
+IMPORTANTE: Al finalizar el ranking, pregunta al usuario de forma natural y profesional cómo desea proceder. Menciona las opciones:
+- Confirmar las mejores opciones del ranking
+- Seleccionar códigos específicos (da 1-2 ejemplos de códigos del ranking)
+- Cancelar el pedido
+
+Usa un tono profesional pero cercano. La pregunta debe ser breve (máximo 4 líneas).
