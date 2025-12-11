@@ -5,6 +5,8 @@ from chains.chain_generator.ranking_chain import generate_ranking_chain
 from chains.chain_generator.validation_chain import generate_validation_chain
 from chains.chain_generator.verify_product_chain import generate_verify_product_chain
 from chains.chain_generator.selection_interpretation_chain import generate_selection_interpretation_chain
+from chains.chain_generator.no_stock_chain import generate_no_stock_chain
+from chains.chain_generator.interpret_no_stock_response_chain import generate_interpret_no_stock_response_chain
 
 
 class ChainAdministrator:
@@ -38,6 +40,8 @@ class ChainAdministrator:
         self._chains['ranking_chain'] = generate_ranking_chain(llm)
         self._chains['verify_product_chain'] = generate_verify_product_chain(llm)
         self._chains['selection_interpretation_chain'] = generate_selection_interpretation_chain(llm)
+        self._chains['no_stock_chain'] = generate_no_stock_chain(llm)
+        self._chains['interpret_no_stock_response_chain'] = generate_interpret_no_stock_response_chain(llm)
         
                         
         print("Generación de cadenas completada.")

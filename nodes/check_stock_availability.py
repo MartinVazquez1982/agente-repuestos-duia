@@ -1,10 +1,12 @@
 from schemas.state import AgentState
 from langchain_core.messages import AIMessage
+from chains.chain_administrator import ChainAdministrator
 
 def check_stock_availability(state: AgentState) -> AgentState:
     """
     Verifica si hay al menos una opción con stock disponible.
-    Si no hay stock en ninguna opción, informa al usuario y pregunta si desea hacer otra búsqueda.
+    Si no hay stock en ninguna opción, usa el LLM para generar un mensaje
+    informando al usuario y preguntando si desea hacer otra búsqueda.
     """
     resultados_internos = state.get("resultados_internos", {})
     resultados_externos = state.get("resultados_externos", {})
@@ -38,24 +40,16 @@ def check_stock_availability(state: AgentState) -> AgentState:
         product_requests = state.get("product_requests", [])
         productos_buscados = [p.get("name", "producto") for p in product_requests]
         
-        mensaje = "\n" + "⚠️"*40 + "\n"
-        mensaje += "❌ **SIN STOCK DISPONIBLE**\n"
-        mensaje += "⚠️"*40 + "\n\n"
+        # Formatear lista de productos
+        productos_lista = "\n".join([f"{i}. {producto}" for i, producto in enumerate(productos_buscados, 1)])
         
-        mensaje += "Lo sentimos, actualmente **no tenemos stock disponible** para los productos solicitados:\n\n"
+        # Usar el LLM para generar el mensaje
+        no_stock_chain = ChainAdministrator().get('no_stock_chain')
+        response = no_stock_chain.invoke({
+            "productos_solicitados": productos_lista
+        })
         
-        for i, producto in enumerate(productos_buscados, 1):
-            mensaje += f"   {i}. {producto}\n"
-        
-        mensaje += "\n" + "─"*80 + "\n\n"
-        mensaje += "🔄 **OPCIONES DISPONIBLES:**\n\n"
-        mensaje += "1. **Realizar una nueva búsqueda** con otros productos\n"
-        mensaje += "2. **Cancelar** y esperar reposición de stock\n\n"
-        mensaje += "─"*80 + "\n\n"
-        mensaje += "💬 ¿Deseas realizar una **nueva búsqueda** con otros productos?\n\n"
-        mensaje += "Por favor responde:\n"
-        mensaje += "• **'sí'** o **'nueva búsqueda'** - Para buscar otros productos\n"
-        mensaje += "• **'no'** o **'cancelar'** - Para finalizar\n"
+        mensaje = response.content if hasattr(response, 'content') else str(response)
         
         return {
             "messages": [AIMessage(content=mensaje)],

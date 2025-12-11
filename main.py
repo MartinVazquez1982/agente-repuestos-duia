@@ -40,8 +40,12 @@ if __name__ == "__main__":
     config = {"configurable": {"thread_id": "1"}}
     
     #mensaje_usuario = input("\n👤 Tú: ")
-    mensaje_usuario = "Necesito un Rodamiento rígido de bolas modelo 6204 2RS y dos Kits reparación válvula"
-    #mensaje_usuario = "Necesito el filtro Atlas Copco modelo AC-250 para compresor de 250 m3/h"
+
+    ## DEBUG PARA PRODUCTO SOLO INTERNO
+    #mensaje_usuario = "Necesito un Rodamiento rígido de bolas modelo 6204 2RS"
+
+    ## DEBUG PARA PRODCUTO SOLO EXTERNO
+    mensaje_usuario = "Necesito el filtro Atlas Copco modelo AC-250 para compresor de 250 m3/h"
     # Estado inicial con todos los campos
     estado_inicial = {
         "messages": [HumanMessage(mensaje_usuario)],
@@ -109,13 +113,39 @@ if __name__ == "__main__":
             reiniciar = result.get("reiniciar_busqueda", False)
             
             if reiniciar:
-                # Mostrar mensaje del agente y continuar el loop
-                mensajes_actuales = result.get("messages", [])
-                for msg in reversed(mensajes_actuales):
-                    if isinstance(msg, AIMessage):
-                        print(f"\n🤖 Agente: {msg.content}")
+                # El usuario quiere hacer una nueva búsqueda
+                # Verificar el estado actual del grafo
+                snapshot = graph.get_state(config)
+                proximos_nodos = snapshot.next if hasattr(snapshot, 'next') else []
+                
+                if proximos_nodos and "extract_products_info" in proximos_nodos:
+                    # El grafo ya está pausado esperando nuevos productos
+                    # Mostrar el mensaje de request_new_products
+                    mensajes_actuales = result.get("messages", [])
+                    for msg in reversed(mensajes_actuales):
+                        if isinstance(msg, AIMessage):
+                            print(f"\n🤖 Agente: {msg.content}")
+                            break
+                    
+                    # Pedir los nuevos productos al usuario
+                    print(f"\n{'─'*60}")
+                    nuevo_mensaje = input("\n👤 Nuevos productos: ").strip()
+                    
+                    if nuevo_mensaje.lower() in ["salir", "exit", "quit"]:
+                        print("\n👋 Conversación terminada")
                         break
-                continue
+                    
+                    # Actualizar con los nuevos productos
+                    graph.update_state(config, {
+                        "messages": [HumanMessage(content=nuevo_mensaje)]
+                    })
+                    
+                    # Continuar el flujo normal (irá a extract_products_info)
+                    result = graph.invoke(None, config)
+                    continue
+                else:
+                    # El grafo no está en el estado esperado, continuar el loop
+                    continue
             else:
                 # Usuario canceló, terminar
                 break

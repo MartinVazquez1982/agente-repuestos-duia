@@ -14,6 +14,7 @@ from nodes.process_both_type import process_both_types
 from nodes.schedule_delivery import schedule_delivery
 from nodes.check_stock_availability import check_stock_availability
 from nodes.handle_no_stock_response import handle_no_stock_response
+from nodes.request_new_products import request_new_products
 from routes.routes import (
     route_classification,
     route_after_extraction_check,
@@ -95,15 +96,18 @@ def generate_agent():
         }
     )
     
-    # Desde handle_no_stock_response → decidir si reiniciar o terminar
+    # Desde handle_no_stock_response → decidir si pedir nuevos productos o terminar
     graph_builder.add_conditional_edges(
         "handle_no_stock_response",
         route_after_no_stock_response,
         {
-            "restart": "extract_products_info",  # Volver a pedir productos
+            "restart": "request_new_products",  # Ir a pedir nuevos productos
             "end": END
         }
     )
+    
+    # Desde request_new_products → extract_products_info (con interrupt para esperar respuesta)
+    graph_builder.add_edge("request_new_products", "extract_products_info")
     
     # Agregar interrupt ANTES de handle_no_stock_response para esperar respuesta del usuario
 
@@ -117,6 +121,7 @@ def generate_agent():
     graph_builder.add_node("schedule_delivery", schedule_delivery)
     graph_builder.add_node("check_stock_availability", check_stock_availability)
     graph_builder.add_node("handle_no_stock_response", handle_no_stock_response)
+    graph_builder.add_node("request_new_products", request_new_products)
 
     # Conexiones actualizadas
     graph_builder.add_edge("reranking", "human_in_the_loop")
@@ -158,7 +163,7 @@ def generate_agent():
     graph = graph_builder.compile(
         checkpointer=memory,
         interrupt_before=["handle_no_stock_response"],  # Pausa ANTES de procesar respuesta sin stock
-        interrupt_after=["human_in_the_loop"]  # Pausa DESPUÉS de mostrar ranking
+        interrupt_after=["human_in_the_loop", "request_new_products"]  # Pausa DESPUÉS de mostrar ranking y pedir nuevos productos
     )
     
     return graph

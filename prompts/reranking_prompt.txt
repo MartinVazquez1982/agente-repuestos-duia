@@ -19,9 +19,5 @@ FORMATO DE RESPUESTA (conciso):
 
 Sé directo y conciso. Máximo 4-5 líneas por repuesto.
 
-IMPORTANTE: Al finalizar el ranking, pregunta al usuario de forma natural y profesional cómo desea proceder. Menciona las opciones:
-- Confirmar las mejores opciones del ranking
-- Seleccionar códigos específicos (da 1-2 ejemplos de códigos del ranking)
-- Cancelar el pedido
-
+IMPORTANTE: Al finalizar el ranking, pregunta al usuario de forma natural y profesional cómo desea proceder. Dale entender al usuario que indicando los codigos puede avanzar con los pedidos.
 Usa un tono profesional pero cercano. La pregunta debe ser breve (máximo 4 líneas).

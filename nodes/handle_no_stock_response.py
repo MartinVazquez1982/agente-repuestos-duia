@@ -1,10 +1,11 @@
 from schemas.state import AgentState
 from langchain_core.messages import AIMessage, HumanMessage
+from chains.chain_administrator import ChainAdministrator
 
 def handle_no_stock_response(state: AgentState) -> AgentState:
     """
     Procesa la respuesta del usuario cuando no hay stock disponible.
-    Determina si el usuario quiere hacer una nueva búsqueda o cancelar.
+    Usa el LLM para determinar si el usuario quiere hacer una nueva búsqueda o cancelar.
     """
     messages = state.get("messages", [])
     
@@ -12,7 +13,7 @@ def handle_no_stock_response(state: AgentState) -> AgentState:
     user_message = None
     for msg in reversed(messages):
         if isinstance(msg, HumanMessage):
-            user_message = msg.content.strip().lower()
+            user_message = msg.content.strip()
             break
     
     if not user_message:
@@ -21,25 +22,17 @@ def handle_no_stock_response(state: AgentState) -> AgentState:
             "reiniciar_busqueda": False
         }
     
-    # Detectar intención del usuario
-    palabras_afirmativas = ['si', 'sí', 'nueva', 'busqueda', 'búsqueda', 'otro', 'otros', 'diferente', 'ok', 'dale', 'bueno']
-    palabras_negativas = ['no', 'cancelar', 'cancel', 'salir', 'exit', 'terminar', 'nada']
+    # Usar el LLM para interpretar la intención del usuario
+    interpret_chain = ChainAdministrator().get('interpret_no_stock_response_chain')
+    response = interpret_chain.invoke({
+        "user_response": user_message
+    })
     
-    quiere_nueva_busqueda = any(palabra in user_message for palabra in palabras_afirmativas)
-    quiere_cancelar = any(palabra in user_message for palabra in palabras_negativas)
+    intencion = response.content.strip() if hasattr(response, 'content') else str(response).strip()
     
-    if quiere_nueva_busqueda and not quiere_cancelar:
+    if "NUEVA_BUSQUEDA" in intencion.upper():
         # Usuario quiere hacer una nueva búsqueda
-        mensaje = "\n" + "✅"*40 + "\n"
-        mensaje += "🔄 **NUEVA BÚSQUEDA**\n"
-        mensaje += "✅"*40 + "\n\n"
-        mensaje += "Perfecto, vamos a realizar una nueva búsqueda.\n\n"
-        mensaje += "Por favor, indícame qué productos necesitas:\n\n"
-        mensaje += "💡 **Consejo:** Sé lo más específico posible (marca, modelo, características)\n"
-        mensaje += "   para obtener mejores resultados.\n"
-        
         return {
-            "messages": [AIMessage(content=mensaje)],
             "reiniciar_busqueda": True,
             # Limpiar estado anterior
             "product_requests": [],
@@ -52,12 +45,9 @@ def handle_no_stock_response(state: AgentState) -> AgentState:
             "tiene_stock_disponible": None
         }
     
-    elif quiere_cancelar:
+    elif "CANCELAR" in intencion.upper():
         # Usuario quiere cancelar
-        mensaje = "\n" + "👋"*40 + "\n"
-        mensaje += "❌ **BÚSQUEDA CANCELADA**\n"
-        mensaje += "👋"*40 + "\n\n"
-        mensaje += "Entendido. La búsqueda ha sido cancelada.\n\n"
+        mensaje = "Entendido. La búsqueda ha sido cancelada.\n\n"
         mensaje += "📋 **Recomendaciones:**\n"
         mensaje += "   • Consulta con el área de compras sobre fechas de reposición\n"
         mensaje += "   • Considera productos alternativos o equivalentes\n"
@@ -69,11 +59,11 @@ def handle_no_stock_response(state: AgentState) -> AgentState:
         }
     
     else:
-        # Respuesta ambigua
+        # Respuesta ambigua (el LLM no pudo determinar)
         mensaje = "❓ No entendí tu respuesta.\n\n"
         mensaje += "Por favor indica:\n"
         mensaje += "• **'sí'** - Para realizar una nueva búsqueda\n"
-        mensaje += "• **'no'** - Para cancelar\n"
+        mensaje += "• **'no'** - Para cancelar"
         
         return {
             "messages": [AIMessage(content=mensaje)],
