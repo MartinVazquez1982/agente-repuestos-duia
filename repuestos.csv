@@ -118,3 +118,13 @@ R-0097,Caja IP65 para sensores,ELECTRICO,Genérico,CAJA-IP65,INTERNAL,INT-ALM-CE
 R-0098,Malla porta cables 50mm,ELECTRICO,Genérico,MALLA-50,EXTERNAL,PRV-013,Cableado Argentino,4,2.60,USD,200,3,Córdoba,20,20000,Venta por metros
 R-0099,Soporte de rodamiento UCF205,MECANICO,SKF,UCF205,EXTERNAL,PRV-001,Distribuidora Rodamax,5,18.50,USD,25,6,Prov. Buenos Aires,1,15000,Alta demanda
 R-0100,Correa dentada T10-2000,CORREA,Gates,T10-2000,INTERNAL,INT-ALM-SEDE2,Almacén Sede 2,4,22.00,USD,2,1,Depósito Sede 2,1,15000,Para sincronización industrial
+R-0101,Analizador de vibraciones portátil SKF,INSTRUMENTO,SKF,CMVL3860,EXTERNAL,PRV-017,Instrumentación Técnica SA,5,2850.00,USD,3,15,Buenos Aires,1,50000,Equipo especializado para mantenimiento predictivo
+R-0102,Cámara termográfica industrial FLIR,INSTRUMENTO,FLIR,E8-XT,EXTERNAL,PRV-017,Instrumentación Técnica SA,5,3200.00,USD,2,20,Buenos Aires,1,60000,Para inspección térmica de equipos eléctricos
+R-0103,Medidor de espesor ultrasónico,INSTRUMENTO,GE,DM5E,EXTERNAL,PRV-018,Mediciones Industriales SRL,4,890.00,USD,5,10,Rosario,1,30000,Para inspección de tanques y tuberías
+R-0104,Tacómetro láser digital profesional,INSTRUMENTO,Testo,TESTO-470,EXTERNAL,PRV-018,Mediciones Industriales SRL,4,420.00,USD,8,7,Rosario,1,25000,Medición sin contacto de RPM
+R-0105,Balanceadora dinámica portátil,INSTRUMENTO,Pruftechnik,VIBROTEST-60,EXTERNAL,PRV-017,Instrumentación Técnica SA,5,4500.00,USD,1,25,Buenos Aires,1,80000,Para balanceo in-situ de rotores
+R-0106,Alineador láser de ejes Rotalign,INSTRUMENTO,Pruftechnik,ROTALIGN-ULTRA,EXTERNAL,PRV-017,Instrumentación Técnica SA,5,5200.00,USD,2,30,Buenos Aires,1,100000,Sistema de alineación de precisión
+R-0107,Endoscopio industrial flexible 3m,INSTRUMENTO,Olympus,IPLEX-NX,EXTERNAL,PRV-019,Equipos NDT Argentina,5,6800.00,USD,1,35,CABA,1,70000,Para inspección interna de equipos
+R-0108,Medidor de dureza portátil Rockwell,INSTRUMENTO,Mitutoyo,HR-530,EXTERNAL,PRV-018,Mediciones Industriales SRL,4,1250.00,USD,3,12,Rosario,1,40000,Control de calidad de materiales
+R-0109,Calibrador Vernier digital 300mm,INSTRUMENTO,Mitutoyo,CD-30C,EXTERNAL,PRV-018,Mediciones Industriales SRL,5,180.00,USD,15,5,Rosario,1,20000,Medición de precisión
+R-0110,Micrómetro exterior digital 0-25mm,INSTRUMENTO,Mitutoyo,MDC-25S,EXTERNAL,PRV-018,Mediciones Industriales SRL,5,220.00,USD,12,5,Rosario,1,15000,Alta precisión para mecanizado

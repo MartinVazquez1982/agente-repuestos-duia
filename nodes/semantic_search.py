@@ -77,13 +77,13 @@ def semantic_search_internal(state: AgentState) -> AgentState:
             # Filtrar por stock disponible y score
             resultados_con_stock = [
                 r for r in resultados 
-                if r.get('score', 0) >= 0.50 and r.get('stock_disponible', 0) > 0
+                if r.get('score', 0) >= 0.5 and r.get('stock_disponible', 0) > 0
             ]
             
             # Guardar resultados sin stock (para búsqueda externa por código)
             resultados_sin_stock = [
                 r for r in resultados 
-                if r.get('score', 0) >= 0.50 and r.get('stock_disponible', 0) == 0
+                if r.get('score', 0) >= 0.5 and r.get('stock_disponible', 0) == 0
             ]
             
             if not resultados_con_stock:

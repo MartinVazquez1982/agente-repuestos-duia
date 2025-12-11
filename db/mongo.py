@@ -40,7 +40,7 @@ class MongoCollectionManager:
             client = MongoClient(MONGO_URI)
             
             # 3. Acceder a DB y Collection
-            db = client.db_respuestos
+            db = client["repuestos_db"]
             self._collection = db.repuestos
             
             # Opcional: Probar la conexión (ping)

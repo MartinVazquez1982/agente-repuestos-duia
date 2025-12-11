@@ -44,8 +44,12 @@ if __name__ == "__main__":
     ## DEBUG PARA PRODUCTO SOLO INTERNO
     #mensaje_usuario = "Necesito un Rodamiento rígido de bolas modelo 6204 2RS"
 
-    ## DEBUG PARA PRODCUTO SOLO EXTERNO
-    mensaje_usuario = "Necesito el filtro Atlas Copco modelo AC-250 para compresor de 250 m3/h"
+    ## DEBUG PARA PRODUCTO SIN STOCK
+    #mensaje_usuario = "Necesito el filtro Atlas Copco modelo AC-250 para compresor de 250 m3/h"
+
+    ## DEBUG PARA PRODUCTO INTERNO Y EXTERNO
+    mensaje_usuario = "Necesito un rodamiento SKF 6204 2RS y una cámara termográfica FLIR modelo E8-XT" # R-0101 y R-0102
+
     # Estado inicial con todos los campos
     estado_inicial = {
         "messages": [HumanMessage(mensaje_usuario)],
