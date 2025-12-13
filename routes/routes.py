@@ -2,7 +2,7 @@ from schemas.state import AgentState
 
 def route_classification(state: AgentState) -> str:
     """
-    Ruta de clasificación.
+    Decide si continuar con extracción (pedido de repuestos) o terminar (conversación general).
     """
     if state['validation_result'].is_parts_request:
         return "continue"
@@ -11,7 +11,7 @@ def route_classification(state: AgentState) -> str:
     
 def route_after_extraction_check(state: AgentState) -> str:
     """
-    Decide si continuar con semantic_search o pedir más info.
+    Decide si iniciar búsqueda semántica (info completa) o solicitar más detalles al usuario.
     """
     if state.get("info_completa", False):
         return "semantic_search"  # ← Todos completos, buscar
@@ -20,7 +20,7 @@ def route_after_extraction_check(state: AgentState) -> str:
     
 def need_external_search(state: AgentState) -> str:
     """
-    Decide si se necesita búsqueda externa.
+    Decide si buscar en proveedores externos (sin match interno) o continuar al ranking.
     """
     productos_sin_match = state.get("productos_sin_match_interno", [])
     
@@ -31,7 +31,7 @@ def need_external_search(state: AgentState) -> str:
     
 def route_after_selection(state: AgentState) -> str:
     """
-    Decide si proceder con el pedido o terminar.
+    Decide si procesar pedido (hay selecciones) o terminar (usuario canceló).
     """
     selecciones = state.get("selecciones_usuario", [])
     
@@ -42,10 +42,7 @@ def route_after_selection(state: AgentState) -> str:
     
 def route_by_product_type(state: AgentState) -> str:
     """
-    Decide el flujo según el tipo de productos seleccionados.
-    - Solo INTERNOS → process_internal_order
-    - Solo EXTERNOS → generate_external_email
-    - MIXTOS → process_both (ambos procesos)
+    Enruta según tipo de productos: solo internos, solo externos, mixtos o terminar.
     """
     selecciones = state.get("selecciones_usuario", [])
     
@@ -69,7 +66,7 @@ def route_by_product_type(state: AgentState) -> str:
 
 def route_after_stock_check(state: AgentState) -> str:
     """
-    Decide si continuar con el ranking o informar que no hay stock.
+    Decide si continuar al ranking (hay stock) o informar falta de stock.
     """
     tiene_stock = state.get("tiene_stock_disponible", True)
     
@@ -80,7 +77,7 @@ def route_after_stock_check(state: AgentState) -> str:
 
 def route_after_no_stock_response(state: AgentState) -> str:
     """
-    Decide si reiniciar la búsqueda o terminar.
+    Decide si reiniciar búsqueda (usuario acepta) o terminar (usuario cancela).
     """
     reiniciar = state.get("reiniciar_busqueda", False)
     

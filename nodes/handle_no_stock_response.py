@@ -4,8 +4,7 @@ from chains.chain_administrator import ChainAdministrator
 
 def handle_no_stock_response(state: AgentState) -> AgentState:
     """
-    Procesa la respuesta del usuario cuando no hay stock disponible.
-    Usa el LLM para determinar si el usuario quiere hacer una nueva búsqueda o cancelar.
+    Interpreta con LLM respuesta del usuario ante falta de stock (nueva búsqueda o cancelar).
     """
     messages = state.get("messages", [])
     

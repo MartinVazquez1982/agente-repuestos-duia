@@ -3,7 +3,7 @@ from chains.chain_administrator import ChainAdministrator
 
 def classify_request(state: AgentState) -> AgentState:
     """
-    Clasifica la solicitud del usuario.
+    Clasifica con LLM si el mensaje es solicitud de repuestos o conversación general.
     """
     messages = state['messages']
     validation_result_object = ChainAdministrator().get('validation_chain').invoke({"messages": messages})
@@ -12,6 +12,6 @@ def classify_request(state: AgentState) -> AgentState:
 
 def set_val_message(state: AgentState) -> AgentState:
     """
-    Establece el mensaje de validación.
+    Retorna el mensaje de validación al usuario desde el resultado de clasificación.
     """
     return {"messages": [state['validation_result'].message]}

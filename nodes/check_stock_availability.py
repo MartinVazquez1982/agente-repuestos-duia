@@ -4,9 +4,7 @@ from chains.chain_administrator import ChainAdministrator
 
 def check_stock_availability(state: AgentState) -> AgentState:
     """
-    Verifica si hay al menos una opción con stock disponible.
-    Si no hay stock en ninguna opción, usa el LLM para generar un mensaje
-    informando al usuario y preguntando si desea hacer otra búsqueda.
+    Verifica si hay stock disponible en opciones internas/externas; genera mensaje con LLM si no hay stock.
     """
     resultados_internos = state.get("resultados_internos", {})
     resultados_externos = state.get("resultados_externos", {})

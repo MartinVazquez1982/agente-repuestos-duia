@@ -11,8 +11,7 @@ from chains.chain_generator.interpret_no_stock_response_chain import generate_in
 
 class ChainAdministrator:
     """
-    Clase Singleton para generar y almacenar todas las cadenas (chains) de LangChain.
-    Asegura que las cadenas se inicialicen una sola vez.
+    Singleton que genera y almacena todas las chains de LangChain una sola vez.
     """
     _instance = None
     _chains: Dict[str, Any] = {}
@@ -25,9 +24,7 @@ class ChainAdministrator:
 
     def generate(self, llm):
         """
-        Genera todas las cadenas (chains) si aún no han sido generadas.
-        Requiere el modelo LLM como argumento.
-        (El contenido de este método permanece igual que en la respuesta anterior)
+        Inicializa todas las chains con el LLM proporcionado si aún no fueron generadas.
         """
         if self._chains:
             print("Las cadenas ya fueron generadas. Usando la instancia existente.")
@@ -48,13 +45,7 @@ class ChainAdministrator:
         
     def get(self, key: Optional[str] = None) -> Any:
         """
-        Retorna una cadena específica por su clave, o todas las cadenas si no se 
-        proporciona una clave.
-
-        :param key: Clave (nombre) de la cadena a obtener (ej: 'validation_chain').
-        :return: La cadena de LangChain solicitada o el diccionario completo de cadenas.
-        :raises KeyError: Si la clave solicitada no existe.
-        :raises RuntimeError: Si las cadenas no han sido generadas.
+        Retorna chain específica por clave o todas las chains si no se especifica clave.
         """
         if not self._chains:
             raise RuntimeError("Las cadenas no han sido generadas. Llama a .generate(llm) primero.")

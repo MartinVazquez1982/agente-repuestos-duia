@@ -5,8 +5,7 @@ from schemas.structure_outputs import UserSelectionIntent
 
 def find_codigo_in_results(codigo: str, resultados_por_producto: dict) -> tuple:
     """
-    Busca un código en los resultados agrupados por producto.
-    Retorna (info, tipo, idx_producto) o (None, None, None) si no se encuentra.
+    Busca un código en resultados agrupados; retorna (info_opcion, idx_producto) o (None, None).
     """
     for idx_producto, opciones in resultados_por_producto.items():
         for opcion in opciones:
@@ -16,9 +15,7 @@ def find_codigo_in_results(codigo: str, resultados_por_producto: dict) -> tuple:
 
 def process_user_selection(state: AgentState) -> AgentState:
     """
-    Procesa la selección del usuario usando LLM para interpretar su intención.
-    Valida que los códigos seleccionados estén en el ranking.
-    Determina si son productos internos o externos.
+    Interpreta selección del usuario con LLM, valida códigos y determina tipo de orden (interno/externo/mixto).
     """
     messages = state.get("messages", [])
     codigos_disponibles = state.get("codigos_repuestos", [])

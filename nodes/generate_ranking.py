@@ -3,7 +3,7 @@ from schemas.state import AgentState
 
 def generate_ranking(state: AgentState) -> AgentState:
     """
-    Genera ranking usando SOLO el LLM.
+    Genera ranking de opciones internas y externas usando LLM con criterios de precio, lead time y rating.
     """
     from utils import format_options_for_llm
     

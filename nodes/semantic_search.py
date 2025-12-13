@@ -6,9 +6,7 @@ from schemas.repuesto import Repuesto
 
 def semantic_search_internal(state: AgentState) -> AgentState:
     """
-    Búsqueda semántica SOLO en inventario INTERNO.
-    Verifica qué productos fueron encontrados y cuáles no.
-    Combina búsqueda semántica + verificación de stock en un solo paso.
+    Realiza búsqueda vectorial en inventario INTERNO y verifica stock vs cantidad solicitada por producto.
     """    
     product_requests = state.get("product_requests", [])
     
@@ -264,10 +262,7 @@ def semantic_search_internal(state: AgentState) -> AgentState:
     
 def semantic_search_external(state: AgentState) -> AgentState:
     """
-    Búsqueda HÍBRIDA en proveedores EXTERNOS.
-    - Si hay códigos sin stock: búsqueda por código (precisa)
-    - Si NO hay códigos: búsqueda semántica (cobertura)
-    Solo busca productos que NO se encontraron internamente.
+    Búsqueda híbrida en proveedores EXTERNOS: por código (si disponible) o semántica (fallback).
     """
         
     productos_sin_match = state.get("productos_sin_match_interno", [])

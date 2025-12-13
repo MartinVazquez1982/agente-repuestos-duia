@@ -2,8 +2,7 @@ from schemas.state import AgentState
 
 def process_internal_order(state: AgentState) -> AgentState:
     """
-    Imprime orden de compra interna para productos INTERNOS.
-    NO agrega mensajes al state, solo hace print directo.
+    Imprime orden de compra para productos INTERNOS agrupados por almacén (solo print, sin mensajes al state).
     """
     selecciones = state.get("selecciones_usuario", [])
     internos = [s for s in selecciones if s['tipo'] == 'INTERNO']

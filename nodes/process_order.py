@@ -3,8 +3,7 @@ from langchain_core.messages import AIMessage
 
 def process_order(state: AgentState) -> AgentState:
     """
-    Procesa la orden de compra con los productos seleccionados.
-    Genera un resumen detallado por tipo (INTERNO/EXTERNO) y proveedor.
+    Genera resumen detallado de orden con productos internos/externos, precios y tiempos de entrega.
     """
     selecciones = state.get("selecciones_usuario", [])
     

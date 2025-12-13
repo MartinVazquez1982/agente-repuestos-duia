@@ -3,6 +3,9 @@ from schemas.structure_outputs import UserSelectionIntent
 
 
 def generate_selection_interpretation_chain(llm):
+    """
+    Crea chain para interpretar selección del usuario (confirmar todo, códigos específicos o cancelar).
+    """
     INTERPRET_SELECTION_PROMPT = """
     Eres un asistente experto en interpretar las respuestas de usuarios en un sistema de pedidos de repuestos.
 

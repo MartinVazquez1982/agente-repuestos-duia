@@ -2,7 +2,10 @@ from langchain_core.prompts import ChatPromptTemplate
 
 
 def generate_ranking_chain(llm):
-    with open('prompts/reranking_prompt.txt', 'r', encoding='utf-8') as f:
+    """
+    Crea chain para generar ranking de opciones basado en precio, lead time, rating y disponibilidad.
+    """
+    with open('system_prompts/reranking_prompt.txt', 'r', encoding='utf-8') as f:
         RERANKING_PROMPT = f.read()
 
     ranking_prompt_template = ChatPromptTemplate.from_messages([

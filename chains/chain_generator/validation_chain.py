@@ -4,7 +4,10 @@ from langchain_core.output_parsers import PydanticOutputParser
 
 
 def generate_validation_chain(llm):
-    with open('prompts/intention_classifier_prompt.txt', 'r', encoding='utf-8') as f:
+    """
+    Crea chain para clasificar intención del usuario (pedido de repuestos vs consulta general).
+    """
+    with open('system_prompts/intention_classifier_prompt.txt', 'r', encoding='utf-8') as f:
          CLASSIFIER_SYSTEM_PROMPT = f.read()
 
     validation_prompt = ChatPromptTemplate.from_messages([

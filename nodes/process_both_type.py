@@ -4,8 +4,7 @@ from nodes.generate_external_email import generate_external_email
 
 def process_both_types(state: AgentState) -> AgentState:
     """
-    Procesa tanto productos INTERNOS como EXTERNOS.
-    Llama a ambas funciones que hacen print directo.
+    Procesa productos INTERNOS y EXTERNOS llamando a ambas funciones de impresión.
     """
     # Procesar internos (hace print)
     process_internal_order(state)

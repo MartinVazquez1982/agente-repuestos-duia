@@ -2,8 +2,7 @@ from schemas.state import AgentState
 
 def generate_external_email(state: AgentState) -> AgentState:
     """
-    Imprime email para proveedores EXTERNOS.
-    NO agrega mensajes al state, solo hace print directo.
+    Imprime emails de cotización para proveedores EXTERNOS agrupados por proveedor (solo print, sin mensajes al state).
     """
     selecciones = state.get("selecciones_usuario", [])
     externos = [s for s in selecciones if s['tipo'] == 'EXTERNO']

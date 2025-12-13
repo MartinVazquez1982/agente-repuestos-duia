@@ -4,9 +4,7 @@ from schemas.state import AgentState
 
 def check_product_info_completeness(state: AgentState) -> AgentState:
     """
-    Verifica si CADA producto en product_requests tiene información completa.
-    Usa el LLM para analizar cada descripción individualmente.
-    Retorna info_completa=True solo si TODOS los productos están completos.
+    Valida con LLM si cada producto tiene info suficiente; retorna info_completa=True solo si todos están completos.
     """
     product_requests = state.get('product_requests', [])
     

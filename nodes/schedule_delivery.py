@@ -4,8 +4,7 @@ from langchain_core.messages import AIMessage
 
 def schedule_delivery(state: AgentState) -> AgentState:
     """
-    1. Imprime la agenda de entrega (print directo)
-    2. Genera mensaje final del agente resumiendo todo el proceso
+    Imprime agenda de entrega y genera mensaje final con resumen del proceso completado.
     """
     selecciones = state.get("selecciones_usuario", [])
     
@@ -52,8 +51,7 @@ def schedule_delivery(state: AgentState) -> AgentState:
 
 def _generar_resumen_final(internos, externos, fecha_estimada, max_lead_time):
     """
-    Genera el resumen final sin necesidad de LLM.
-    Template simple con la información del pedido.
+    Genera resumen final del pedido con productos, fechas y próximos pasos (sin LLM, template simple).
     """
     mensaje = "✅ **Proceso completado exitosamente**\n\n"
     mensaje += "📋 **Resumen de acciones realizadas:**\n\n"

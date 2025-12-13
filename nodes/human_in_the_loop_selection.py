@@ -3,9 +3,7 @@ from langchain_core.messages import AIMessage
 
 def human_in_the_loop_selection(state: AgentState) -> AgentState:
     """
-    Presenta el ranking al usuario y solicita su selección.
-    Este nodo se ejecuta DESPUÉS del reranking.
-    El ranking y la pregunta ya fueron generados por el LLM.
+    Presenta el ranking generado por LLM al usuario y solicita su selección de productos.
     """
     recomendaciones = state.get("recomendaciones_llm", "")
     

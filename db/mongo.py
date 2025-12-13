@@ -5,8 +5,7 @@ from typing import Optional
 
 class MongoCollectionManager:
     """
-    Clase Singleton para gestionar la conexión a MongoDB y retornar la Collection.
-    Asegura una única conexión al cliente de MongoDB.
+    Singleton que gestiona conexión a MongoDB y retorna la collection 'repuestos' de forma única.
     """
     _instance = None
     _collection: Optional[Collection] = None
@@ -19,8 +18,7 @@ class MongoCollectionManager:
 
     def initialize(self):
         """
-        Establece la conexión con MongoDB y asigna la collection.
-        Solo se ejecuta la primera vez que se llama.
+        Establece conexión con MongoDB y asigna collection; solo se ejecuta en la primera llamada.
         """
         if self._collection is not None:
             print("Conexión a MongoDB ya inicializada. Usando la collection existente.")
@@ -54,7 +52,7 @@ class MongoCollectionManager:
 
     def get_collection(self) -> Collection:
         """
-        Retorna la instancia de la collection 'repuestos'.
+        Retorna instancia de collection 'repuestos'; inicializa conexión si aún no existe.
         """
         if self._collection is None:
             # Si no se ha inicializado, intenta hacerlo (puede levantar un ValueError)

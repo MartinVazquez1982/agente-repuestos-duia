@@ -2,8 +2,7 @@ from typing import List, Dict
 
 def format_options_for_llm(producto_label: str, opciones: List[Dict]) -> str:
     """
-    Formatea las opciones de un producto solicitado para que el LLM las rankee.
-    Presenta TODAS las opciones sin orden previo.
+    Formatea opciones de repuestos en texto estructurado para presentación al LLM en el ranking.
     """
     if not opciones:
         return f"{producto_label}\nNo hay opciones disponibles.\n"

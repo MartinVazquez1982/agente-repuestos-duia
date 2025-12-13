@@ -28,6 +28,9 @@ from schemas.state import AgentState
 
 
 def generate_agent():
+    """
+    Construye y retorna el grafo LangGraph con todos los nodos, edges y checkpointing configurados.
+    """
     memory = MemorySaver()
 
     # Definimos el grafo

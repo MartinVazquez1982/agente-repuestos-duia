@@ -2,6 +2,9 @@ from langchain_core.prompts import ChatPromptTemplate
 from schemas.structure_outputs import ProductInfoVerification
 
 def generate_verify_product_chain(llm):
+    """
+    Crea chain para verificar si descripción de producto tiene info suficiente para búsqueda efectiva.
+    """
     VERIFY_PRODUCT_INFO_PROMPT = """
     Eres un experto en repuestos industriales e instrumentación. Analiza si la siguiente descripción de producto tiene información SUFICIENTE para realizar una búsqueda precisa en un catálogo.
 

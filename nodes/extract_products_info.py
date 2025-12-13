@@ -5,9 +5,7 @@ from schemas.state import AgentState
 
 def extract_products_info(state: AgentState) -> AgentState:
     """
-    Usa la chain de extracción estructurada para identificar todos los productos
-    descritos por el usuario en los mensajes.
-    MERGEA con productos anteriores que ya tienen información completa.
+    Extrae productos del mensaje del usuario usando LLM y los mergea con productos completos previos.
     """
     messages: list[BaseMessage] = state['messages']
     existing_requests = state.get('product_requests', [])
