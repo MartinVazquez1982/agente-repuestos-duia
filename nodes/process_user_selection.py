@@ -48,20 +48,46 @@ def process_user_selection(state: AgentState) -> AgentState:
         
     except Exception as e:
         print(f"❌ Error al interpretar con LLM: {e}")
-        # Fallback a regex simple
+        # Fallback a regex simple con cantidades
         import re
-        codigos_mencionados = re.findall(r'R-\d{4}', user_message.upper())
-        if codigos_mencionados:
+        # Patrón: captura cantidad (opcional) + código
+        # Ejemplos: "3 R-0001", "R-0001 x5", "R-0001 (10)", "5 unidades de R-0001"
+        patron = r'(?:(\d+)\s*(?:unidades?\s+(?:de|del)\s+|del\s+|x\s*)?)?([Rr]-\d{4})(?:\s*[x×]\s*(\d+)|\s*\((\d+)\)|(?:\s+por\s+(\d+)))?'
+        matches = re.findall(patron, user_message)
+        
+        productos_seleccionados = []
+        for match in matches:
+            cantidad_antes, codigo, cantidad_x, cantidad_paren, cantidad_por = match
+            codigo = codigo.upper()
+            
+            # Determinar cantidad de cualquier formato
+            cantidad = 1
+            if cantidad_antes:
+                cantidad = int(cantidad_antes)
+            elif cantidad_x:
+                cantidad = int(cantidad_x)
+            elif cantidad_paren:
+                cantidad = int(cantidad_paren)
+            elif cantidad_por:
+                cantidad = int(cantidad_por)
+            
+            productos_seleccionados.append({
+                "codigo": codigo,
+                "cantidad": max(1, cantidad)  # Asegurar mínimo 1
+            })
+        
+        if productos_seleccionados:
+            from schemas.structure_outputs import ProductSelection
             interpretation = UserSelectionIntent(
                 accion="seleccionar_codigos",
-                codigos_seleccionados=codigos_mencionados,
+                productos_seleccionados=[ProductSelection(**p) for p in productos_seleccionados],
                 confianza=0.7,
                 razon="Fallback a regex"
             )
         else:
             interpretation = UserSelectionIntent(
                 accion="no_entendido",
-                codigos_seleccionados=[],
+                productos_seleccionados=[],
                 confianza=0.3,
                 razon="Error en interpretación"
             )
@@ -81,15 +107,22 @@ def process_user_selection(state: AgentState) -> AgentState:
     
     elif interpretation.accion == "confirmar_todo":
         print(f"✅ Usuario confirmó todas las opciones")
-        codigos_validos = codigos_disponibles
+        # Crear productos_seleccionados con cantidad = 1 para todos
+        from schemas.structure_outputs import ProductSelection
+        productos_seleccionados = [
+            ProductSelection(codigo=cod, cantidad=1) for cod in codigos_disponibles
+        ]
         
     elif interpretation.accion == "seleccionar_codigos":
-        codigos_mencionados = interpretation.codigos_seleccionados
-        print(f"📋 Códigos seleccionados: {codigos_mencionados}")
+        productos_mencionados = interpretation.productos_seleccionados
+        print(f"📋 Productos seleccionados:")
+        for prod in productos_mencionados:
+            print(f"   • {prod.codigo}: {prod.cantidad} unidad(es)")
         
         # Validar que los códigos existan en el ranking
+        codigos_mencionados = [p.codigo for p in productos_mencionados]
         codigos_invalidos = [c for c in codigos_mencionados if c not in codigos_disponibles]
-        codigos_validos = [c for c in codigos_mencionados if c in codigos_disponibles]
+        productos_validos = [p for p in productos_mencionados if p.codigo in codigos_disponibles]
         
         if codigos_invalidos:
             print(f"⚠️  Códigos inválidos: {codigos_invalidos}")
@@ -126,12 +159,14 @@ def process_user_selection(state: AgentState) -> AgentState:
                 "repuestos_seleccionados": False
             }
         
-        if not codigos_validos:
+        if not productos_validos:
             mensaje = "❓ No detecté ningún código válido. Por favor especifica uno de los códigos del ranking."
             return {
                 "messages": [AIMessage(content=mensaje)],
                 "repuestos_seleccionados": False
             }
+        
+        productos_seleccionados = productos_validos
     
     else:  # no_entendido
         print(f"❓ No se pudo interpretar la respuesta")
@@ -156,7 +191,10 @@ def process_user_selection(state: AgentState) -> AgentState:
     tiene_externos = False
     selecciones_detalladas = []
     
-    for codigo in codigos_validos:
+    for producto in productos_seleccionados:
+        codigo = producto.codigo
+        cantidad = producto.cantidad
+        
         # Buscar el código en los resultados internos o externos
         info_interno, idx_interno = find_codigo_in_results(codigo, resultados_internos)
         info_externo, idx_externo = find_codigo_in_results(codigo, resultados_externos)
@@ -175,15 +213,25 @@ def process_user_selection(state: AgentState) -> AgentState:
         desc = info.get('repuesto_descripcion', 'N/A')
         marca = info.get('marca', 'N/A')
         proveedor = info.get('proveedor_nombre', 'N/A')
+        stock = info.get('stock_disponible', 0)
                 
-        mensaje_final += f"📦 **{codigo}** - {tipo}\n"
+        mensaje_final += f"📦 **{codigo}** x{cantidad} - {tipo}\n"
         mensaje_final += f"   └─ {desc}\n"
         mensaje_final += f"   └─ Marca: {marca}\n"
-        mensaje_final += f"   └─ Proveedor: {proveedor}\n\n"
+        mensaje_final += f"   └─ Proveedor: {proveedor}\n"
+        
+        # Advertencia de stock si es interno
+        if tipo == "INTERNO" and stock < cantidad:
+            mensaje_final += f"   ⚠️  Stock disponible: {stock}/{cantidad} unidades (insuficiente)\n"
+        elif tipo == "INTERNO":
+            mensaje_final += f"   ✅ Stock disponible: {stock}/{cantidad} unidades\n"
+        
+        mensaje_final += "\n"
         
         # Guardar selección detallada
         selecciones_detalladas.append({
             "codigo": codigo,
+            "cantidad": cantidad,
             "tipo": tipo,
             "descripcion": desc,
             "marca": marca,

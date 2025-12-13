@@ -6,19 +6,21 @@ Identificación Discreta: Trata cada repuesto o conjunto de repuestos distintos 
 
 Ejemplo: La frase "tres filtros de aire y un sensor Bosch" debe generar dos ítems de salida.
 
-Preservación del Detalle: La descripción de cada ítem debe ser la frase exacta y completa que el usuario utilizó para describirlo. No la modifiques, resumas, o analices. Mantén toda la información contextual, incluyendo cantidades, marcas, modelos y cualquier especificación mencionada.
+Preservación del Detalle: La descripción de cada ítem debe ser la descripción del producto SIN la cantidad (elimina palabras numéricas del inicio). Mantén toda la información contextual sobre marcas, modelos y especificaciones.
+
+Extracción de Cantidad (OBLIGATORIO): Identifica la cantidad mencionada para cada producto. El campo "cantidad" SIEMPRE debe estar presente. Si no se especifica cantidad explícitamente, SIEMPRE usa 1 como valor por defecto. Las cantidades pueden estar expresadas como números (3, 12) o palabras (un, dos, tres, cuatro, cinco, seis, etc.). Convierte palabras numéricas a números. NUNCA omitas el campo cantidad.
 
 EJEMPLOS DE EXTRACCIONES:
 
 Mensaje: "Hola, necesito el rodamiento rígido de bolas 6204 2RS SKF y 5 correas V-Belt de 1000mm."
 
-Lista: ["el rodamiento rígido de bolas 6204 2RS SKF", "5 correas V-Belt de 1000mm"]
+Lista: [{{"descripcion": "rodamiento rígido de bolas 6204 2RS SKF", "cantidad": 1}}, {{"descripcion": "correas V-Belt de 1000mm", "cantidad": 5}}]
 
 ---
 
 Mensaje: "un filtro de aceite para el motor Deutz. ¿Tienen el R-5000 en stock?"
 
-Lista: ["un filtro de aceite para el motor Deutz.", "¿Tienen el R-5000 en stock?"]
+Lista: [{{"descripcion": "filtro de aceite para el motor Deutz", "cantidad": 1}}, {{"descripcion": "R-5000", "cantidad": 1}}]
 
 ---
 
@@ -30,28 +32,34 @@ Lista: []
 
 Mensaje: "necesito 20 metros de cable de cobre y 3 fusibles de 10A"
 
-Lista: ["20 metros de cable de cobre", "3 fusibles de 10A"]
+Lista: [{{"descripcion": "metros de cable de cobre", "cantidad": 20}}, {{"descripcion": "fusibles de 10A", "cantidad": 3}}]
 
 ---
 
 Mensaje: "Una bomba hidráulica marca Parker, modelo PV-123 y un sensor de presión de agua."
 
-Lista: ["Una bomba hidráulica marca Parker", "modelo PV-123,un sensor de presión de agua."]
+Lista: [{{"descripcion": "bomba hidráulica marca Parker, modelo PV-123", "cantidad": 1}}, {{"descripcion": "sensor de presión de agua", "cantidad": 1}}]
 
 ---
 
 Mensaje: "Dame dos kits de sellos para el cilindro N-10 y un paquete de juntas."
 
-Lista: ["dos kits de sellos para el cilindro N-10", "un paquete de juntas"]
+Lista: [{{"descripcion": "kits de sellos para el cilindro N-10", "cantidad": 2}}, {{"descripcion": "paquete de juntas", "cantidad": 1}}]
 
 ---
 
 Mensaje: "Necesito 10 litros de aceite ISO VG 32, 4 metros de manguera de alta presión de 1/2 pulgada y el filtro de aire 6211."
 
-Lista: ["10 litros de aceite ISO VG 32", "4 metros de manguera de alta presión de 1/2 pulgada", "el filtro de aire 6211"]
+Lista: [{{"descripcion": "litros de aceite ISO VG 32", "cantidad": 10}}, {{"descripcion": "metros de manguera de alta presión de 1/2 pulgada", "cantidad": 4}}, {{"descripcion": "filtro de aire 6211", "cantidad": 1}}]
 
 ---
 
 Mensaje: "¿Me puedes buscar el repuesto R-9999? También 12 arandelas planas."
 
-Lista: ["el repuesto R-9999", "12 arandelas planas"]
+Lista: [{{"descripcion": "repuesto R-9999", "cantidad": 1}}, {{"descripcion": "arandelas planas", "cantidad": 12}}]
+
+---
+
+Mensaje: "Necesito filtros de aceite"
+
+Lista: [{{"descripcion": "filtros de aceite", "cantidad": 1}}]

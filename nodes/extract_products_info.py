@@ -17,15 +17,22 @@ def extract_products_info(state: AgentState) -> AgentState:
         # Usamos la cadena de extracción que retorna ProductList
         product_list_obj = ChainAdministrator().get('extraction_chain').invoke({"messages": messages})
         
-        # Convertir a la nueva estructura de seguimiento
+        # Convertir a la nueva estructura de seguimiento con cantidades
         new_product_requests = []
-        for product_name in product_list_obj.products:
+        product_descriptions = []  # Para mantener compatibilidad
+        
+        for product_item in product_list_obj.products:
+            # Asegurar que cantidad siempre tenga un valor válido (mínimo 1)
+            cantidad = max(1, product_item.cantidad if product_item.cantidad else 1)
+            
             new_product_requests.append({
-                "name": product_name,
+                "name": product_item.descripcion,
+                "cantidad": cantidad,  # Siempre presente y >= 1
                 "info_needed": True,  # Inicialmente se asume que se necesita más info
                 "details": {},
                 "info_solicitada": ["descripción detallada", "marca", "modelo/número de parte"]
             })
+            product_descriptions.append(product_item.descripcion)
         
         # MERGEAR: mantener productos que ya estaban completos (info_needed=False)
         productos_previos_completos = [
@@ -42,7 +49,7 @@ def extract_products_info(state: AgentState) -> AgentState:
         
         return {
             "product_requests": product_requests,
-            "product_description": product_list_obj.products  # Mantenemos por si se usa en otra parte
+            "product_description": product_descriptions  # Mantenemos por si se usa en otra parte
         }
     
     except Exception as e:

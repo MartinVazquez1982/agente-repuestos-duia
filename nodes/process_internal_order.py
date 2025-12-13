@@ -32,13 +32,17 @@ def process_internal_order(state: AgentState) -> AgentState:
         
         for i, prod in enumerate(productos, 1):
             precio = prod.get('precio', 0)
+            cantidad = prod.get('cantidad', 1)
             stock = prod.get('stock', 'N/A')
             lead_time = prod.get('lead_time', 1)
-            total_general += precio
+            
+            valor_total = precio * cantidad
+            total_general += valor_total
             
             print(f"\n{i}. {prod['codigo']} - {prod['descripcion']}")
-            print(f"   📦 Cantidad: 1 unidad")
-            print(f"   💰 Valor: ${precio:.2f}")
+            print(f"   📦 Cantidad: {cantidad} unidad{'es' if cantidad != 1 else ''}")
+            print(f"   💰 Valor unitario: ${precio:.2f}")
+            print(f"   💰 Valor total: ${valor_total:.2f}")
             print(f"   📊 Stock disponible: {stock} unidades")
             print(f"   ⏱️  Preparación: {lead_time} día{'s' if lead_time != 1 else ''}")
         

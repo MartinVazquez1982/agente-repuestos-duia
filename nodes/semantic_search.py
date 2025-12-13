@@ -12,6 +12,9 @@ def semantic_search_internal(state: AgentState) -> AgentState:
     """    
     product_requests = state.get("product_requests", [])
     
+    print("\n" + "="*70)
+    print("🔍 BÚSQUEDA SEMÁNTICA INTERNA")
+    print("="*70)
     
     model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
     
@@ -24,8 +27,13 @@ def semantic_search_internal(state: AgentState) -> AgentState:
     
     for idx, product_req in enumerate(product_requests, 1):
         product_query = product_req.get("name", "")
+        cantidad_solicitada = product_req.get("cantidad", 1)  # Obtener cantidad solicitada
+        
+        print(f"\n📦 PRODUCTO {idx}: '{product_query}' (Cantidad: {cantidad_solicitada})")
+        print("-" * 70)
         
         if not product_query:
+            print("   ⚠️  Descripción vacía, saltando...")
             continue
                 
         query_embedding = model.encode(product_query).tolist()
@@ -64,85 +72,175 @@ def semantic_search_internal(state: AgentState) -> AgentState:
             # Filtrar por proveedor_tipo DESPUÉS de la búsqueda
             resultados = [r for r in resultados_raw if r.get('proveedor_tipo') == 'INTERNAL']
             
+            print(f"   🔎 Búsqueda vectorial completada: {len(resultados)} resultados internos")
+            
             if not resultados or len(resultados) == 0:
-                print(f"   ❌ No encontrado en inventario interno\n")
-                productos_sin_resultados.append({
-                    "idx": idx,
-                    "name": product_query,
-                    "product_req": product_req
-                })
-                mensaje_productos += f"**{idx}. {product_query}**\n   ❌ No disponible internamente\n\n"
-                continue
-            
-            # Filtrar por stock disponible y score
-            resultados_con_stock = [
-                r for r in resultados 
-                if r.get('score', 0) >= 0.5 and r.get('stock_disponible', 0) > 0
-            ]
-            
-            # Guardar resultados sin stock (para búsqueda externa por código)
-            resultados_sin_stock = [
-                r for r in resultados 
-                if r.get('score', 0) >= 0.5 and r.get('stock_disponible', 0) == 0
-            ]
-            
-            if not resultados_con_stock:
-                # Extraer códigos de productos sin stock
-                codigos_sin_stock = [r.get('id_repuesto') for r in resultados_sin_stock if r.get('id_repuesto')]
-                
-                print(f"   ⚠️  Encontrado pero sin stock disponible\n")
-                if codigos_sin_stock:
-                    print(f"      Códigos sin stock: {', '.join(codigos_sin_stock)}\n")
-                
+                print(f"   ❌ RESULTADO: No encontrado en inventario interno")
                 productos_sin_resultados.append({
                     "idx": idx,
                     "name": product_query,
                     "product_req": product_req,
-                    "codigos_sin_stock": codigos_sin_stock  # ← NUEVO: códigos para búsqueda externa
+                    "cantidad_solicitada": cantidad_solicitada
                 })
-                mensaje_productos += f"**{idx}. {product_query}**\n   ⚠️  Sin stock interno\n\n"
+                mensaje_productos += f"**{idx}. {product_query} (x{cantidad_solicitada})**\n   ❌ No disponible internamente\n\n"
                 continue
             
+            # ═══════════════════════════════════════════════════════
+            # VERIFICAR STOCK vs CANTIDAD SOLICITADA
+            # ═══════════════════════════════════════════════════════
             
-            mensaje_productos += f"**{idx}. {product_query}**\n"
+            # Filtrar por score mínimo
+            resultados_validos = [r for r in resultados if r.get('score', 0) >= 0.5]
+            print(f"   📊 Filtrado por score >= 0.5: {len(resultados_validos)} opciones válidas")
             
-            for i, r in enumerate(resultados_con_stock[:3], 1):  # Top 3
-                if '_id' in r:
-                    r['_id'] = str(r['_id'])
-                
-                repuesto = Repuesto(
-                    id_repuesto=r['id_repuesto'],
-                    repuesto_descripcion=r['repuesto_descripcion'],
-                    marca=str(r.get('marca', 'N/A')),
-                    modelo=str(r.get('modelo', 'N/A')),
-                    categoria=str(r.get('categoria', 'N/A')),
-                    score=r.get('score', 0)
-                )
-                
-                todos_repuestos.append(repuesto)
-                
-                if repuesto.id_repuesto not in codigos_unicos_global:
-                    codigos_encontrados_global.append(repuesto.id_repuesto)
-                    codigos_unicos_global.add(repuesto.id_repuesto)
-                
-                # Guardar en formato para reranking - AGRUPAR POR PRODUCTO SOLICITADO
-                if idx not in resultados_por_producto:
-                    resultados_por_producto[idx] = []
-                resultados_por_producto[idx].append(r)
-                
-                stock = r.get('stock_disponible', 0)
-                proveedor = r.get('proveedor_nombre', 'N/A')                
-                mensaje_productos += f"   {i}. **{repuesto.id_repuesto} ({repuesto.marca})** - Stock: {stock}\n"
+            # Clasificar por suficiencia de stock
+            resultados_stock_suficiente = []
+            resultados_stock_insuficiente = []
+            resultados_sin_stock = []
             
+            for r in resultados_validos:
+                stock_disponible = r.get('stock_disponible', 0)
+                
+                if stock_disponible >= cantidad_solicitada:
+                    resultados_stock_suficiente.append(r)
+                elif stock_disponible > 0:
+                    resultados_stock_insuficiente.append(r)
+                else:
+                    resultados_sin_stock.append(r)
+            
+            print(f"   📈 Análisis de stock:")
+            print(f"      ✅ Stock suficiente (>= {cantidad_solicitada}): {len(resultados_stock_suficiente)} opciones")
+            print(f"      ⚠️  Stock insuficiente (< {cantidad_solicitada}): {len(resultados_stock_insuficiente)} opciones")
+            print(f"      ❌ Sin stock: {len(resultados_sin_stock)} opciones")
+            
+            # DECISIÓN: ¿Hay suficiente stock en al menos UNA opción?
+            if resultados_stock_suficiente:
+                # ✅ HAY STOCK SUFICIENTE - Mostrar solo internos
+                print(f"   ✅ DECISIÓN: Mostrar solo internos (hay stock suficiente)")
+                
+                mensaje_productos += f"**{idx}. {product_query} (x{cantidad_solicitada})**\n"
+                
+                for i, r in enumerate(resultados_stock_suficiente[:3], 1):  # Top 3
+                    if '_id' in r:
+                        r['_id'] = str(r['_id'])
+                    
+                    repuesto = Repuesto(
+                        id_repuesto=r['id_repuesto'],
+                        repuesto_descripcion=r['repuesto_descripcion'],
+                        marca=str(r.get('marca', 'N/A')),
+                        modelo=str(r.get('modelo', 'N/A')),
+                        categoria=str(r.get('categoria', 'N/A')),
+                        score=r.get('score', 0)
+                    )
+                    
+                    todos_repuestos.append(repuesto)
+                    
+                    if repuesto.id_repuesto not in codigos_unicos_global:
+                        codigos_encontrados_global.append(repuesto.id_repuesto)
+                        codigos_unicos_global.add(repuesto.id_repuesto)
+                    
+                    # Guardar en formato para reranking - AGRUPAR POR PRODUCTO SOLICITADO
+                    if idx not in resultados_por_producto:
+                        resultados_por_producto[idx] = []
+                    resultados_por_producto[idx].append(r)
+                    
+                    stock = r.get('stock_disponible', 0)
+                    proveedor = r.get('proveedor_nombre', 'N/A')
+                    mensaje_productos += f"   {i}. **{repuesto.id_repuesto} ({repuesto.marca})** - Stock: {stock}/{cantidad_solicitada} ✅\n"
+                
+                mensaje_productos += "\n"
+            
+            else:
+                # ⚠️ STOCK INSUFICIENTE O SIN STOCK - Buscar en externos
+                print(f"   🌐 DECISIÓN: Buscar en externos (stock insuficiente o sin stock)")
+                
+                codigos_para_externos = []
+                
+                # ═══════════════════════════════════════════════════════
+                # AGREGAR opciones internas con stock insuficiente al ranking
+                # ═══════════════════════════════════════════════════════
+                if resultados_stock_insuficiente:
+                    print(f"   📋 Agregando {len(resultados_stock_insuficiente)} opciones internas (stock insuficiente) al ranking")
+                    
+                    for r in resultados_stock_insuficiente:
+                        if '_id' in r:
+                            r['_id'] = str(r['_id'])
+                        
+                        # Agregar a repuestos_encontrados
+                        repuesto = Repuesto(
+                            id_repuesto=r['id_repuesto'],
+                            repuesto_descripcion=r['repuesto_descripcion'],
+                            marca=str(r.get('marca', 'N/A')),
+                            modelo=str(r.get('modelo', 'N/A')),
+                            categoria=str(r.get('categoria', 'N/A')),
+                            score=r.get('score', 0)
+                        )
+                        todos_repuestos.append(repuesto)
+                        
+                        if repuesto.id_repuesto not in codigos_unicos_global:
+                            codigos_encontrados_global.append(repuesto.id_repuesto)
+                            codigos_unicos_global.add(repuesto.id_repuesto)
+                        
+                        # Agregar a resultados_internos para el ranking
+                        if idx not in resultados_por_producto:
+                            resultados_por_producto[idx] = []
+                        resultados_por_producto[idx].append(r)
+                        
+                        # Agregar código para búsqueda externa
+                        codigo = r.get('id_repuesto')
+                        if codigo and codigo not in codigos_para_externos:
+                            codigos_para_externos.append(codigo)
+                
+                # Extraer códigos de productos sin stock
+                for r in resultados_sin_stock:
+                    codigo = r.get('id_repuesto')
+                    if codigo and codigo not in codigos_para_externos:
+                        codigos_para_externos.append(codigo)
+                
+                if codigos_para_externos:
+                    print(f"      📋 Códigos para búsqueda externa: {', '.join(codigos_para_externos)}")
+                
+                # Mostrar lo que hay (aunque sea insuficiente)
+                mensaje_productos += f"**{idx}. {product_query} (x{cantidad_solicitada})**\n"
+                
+                if resultados_stock_insuficiente:
+                    mensaje_productos += f"   ⚠️  Stock insuficiente en interno:\n"
+                    for i, r in enumerate(resultados_stock_insuficiente[:2], 1):
+                        stock = r.get('stock_disponible', 0)
+                        codigo = r.get('id_repuesto', 'N/A')
+                        mensaje_productos += f"      • {codigo}: Solo {stock}/{cantidad_solicitada} disponibles\n"
+                else:
+                    mensaje_productos += f"   ❌ Sin stock disponible\n"
+                
+                mensaje_productos += f"   🔍 Buscando opciones externas...\n\n"
+                
+                # Agregar a productos sin resultados (para búsqueda externa)
+                productos_sin_resultados.append({
+                    "idx": idx,
+                    "name": product_query,
+                    "product_req": product_req,
+                    "cantidad_solicitada": cantidad_solicitada,
+                    "codigos_sin_stock": codigos_para_externos,
+                    "stock_insuficiente": len(resultados_stock_insuficiente) > 0
+                })
+                # No hacer continue - seguir el flujo para agregar el mensaje
+                
             mensaje_productos += "\n"
                     
         except Exception as e:
-            print(f"   ❌ Error: {e}\n")
+            print(f"   ❌ ERROR: {e}")
             productos_sin_resultados.append({
                 "idx": idx,
                 "name": product_query,
-                "product_req": product_req
+                "product_req": product_req,
+                "cantidad_solicitada": cantidad_solicitada
             })
+    
+    print("\n" + "="*70)
+    print(f"✅ BÚSQUEDA INTERNA COMPLETADA")
+    print(f"   • Productos con stock suficiente: {len(todos_repuestos)}")
+    print(f"   • Productos que requieren búsqueda externa: {len(productos_sin_resultados)}")
+    print("="*70 + "\n")
     
     # Preparar mensaje
     mensaje = "🔍 **Resultados de búsqueda interna:**\n\n"
@@ -150,10 +248,10 @@ def semantic_search_internal(state: AgentState) -> AgentState:
     
     if productos_sin_resultados:
         mensaje += f"────────────────────────────────\n"
-        mensaje += f"⚠️  **{len(productos_sin_resultados)} producto(s) no disponible(s) internamente**\n"
+        mensaje += f"⚠️  **{len(productos_sin_resultados)} producto(s) requiere(n) búsqueda externa**\n"
         mensaje += f"🌐 Buscando en proveedores externos..."
     else:
-        mensaje += "✅ Todos los productos disponibles internamente"
+        mensaje += "✅ Todos los productos con stock suficiente internamente"
     
     return {
         "messages": [AIMessage(content=mensaje)],
@@ -175,8 +273,12 @@ def semantic_search_external(state: AgentState) -> AgentState:
     productos_sin_match = state.get("productos_sin_match_interno", [])
     
     if not productos_sin_match:
-        print("✅ Todos los productos se encontraron internamente\n")
+        print("\n✅ Todos los productos tienen stock suficiente internamente")
         return {}
+    
+    print("\n" + "="*70)
+    print("🌐 BÚSQUEDA SEMÁNTICA EXTERNA")
+    print("="*70)
     
     model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
     
@@ -189,14 +291,21 @@ def semantic_search_external(state: AgentState) -> AgentState:
     for item in productos_sin_match:
         product_query = item.get("name", "")
         idx = item.get("idx", "")
+        cantidad_solicitada = item.get("cantidad_solicitada", 1)  # Obtener cantidad
         codigos_sin_stock = item.get("codigos_sin_stock", [])
+        stock_insuficiente = item.get("stock_insuficiente", False)
+        
+        print(f"\n📦 PRODUCTO {idx}: '{product_query}' (Cantidad: {cantidad_solicitada})")
+        print("-" * 70)
+        estado = "Stock insuficiente" if stock_insuficiente else "Sin stock"
+        print(f"   ⚠️  Estado interno: {estado}")
         
         # BÚSQUEDA HÍBRIDA: Por código si existe, sino semántica
         if codigos_sin_stock:
             # ═══════════════════════════════════════════════════════
             # CASO A: BÚSQUEDA POR CÓDIGO (más precisa y rápida)
             # ═══════════════════════════════════════════════════════
-            print(f"   🔍 Búsqueda por código: {', '.join(codigos_sin_stock)}")
+            print(f"   🔢 Búsqueda por código: {', '.join(codigos_sin_stock)}")
             
             resultados = []
             for codigo in codigos_sin_stock:
@@ -240,7 +349,7 @@ def semantic_search_external(state: AgentState) -> AgentState:
             # ═══════════════════════════════════════════════════════
             # CASO B: BÚSQUEDA SEMÁNTICA (fallback sin código)
             # ═══════════════════════════════════════════════════════
-            print(f"   🔍 Búsqueda semántica: '{product_query}'")
+            print(f"   🔍 Búsqueda semántica vectorial")
             
             query_embedding = model.encode(product_query).tolist()
             
@@ -276,6 +385,7 @@ def semantic_search_external(state: AgentState) -> AgentState:
                 
                 # Filtrar por proveedor_tipo DESPUÉS de la búsqueda
                 resultados = [r for r in resultados_raw if r.get('proveedor_tipo') == 'EXTERNAL']
+                print(f"      📊 Resultados externos encontrados: {len(resultados)}")
             except Exception as e:
                 print(f"      ❌ Error en búsqueda semántica: {e}")
                 resultados = []
@@ -285,21 +395,26 @@ def semantic_search_external(state: AgentState) -> AgentState:
         # ═══════════════════════════════════════════════════════
         try:
             if not resultados:
-                print(f"   ❌ No encontrado en externos\n")
-                mensaje_externos += f"**{idx}. {product_query}**\n   ❌ No disponible\n\n"
+                print(f"   ❌ RESULTADO: No encontrado en externos")
+                mensaje_externos += f"**{idx}. {product_query} (x{cantidad_solicitada})**\n   ❌ No disponible\n\n"
                 continue
             
             # Filtrar por score (búsqueda por código ya tiene score=1.0)
             resultados_validos = [r for r in resultados if r.get('score', 0) >= 0.50]
+            print(f"   📊 Filtrado por score >= 0.5: {len(resultados_validos)} opciones válidas")
             
             if not resultados_validos:
-                print(f"   ❌ Sin resultados válidos (score < 0.50)\n")
-                mensaje_externos += f"**{idx}. {product_query}**\n   ❌ No disponible\n\n"
+                print(f"   ❌ RESULTADO: Sin resultados válidos (score < 0.50)")
+                mensaje_externos += f"**{idx}. {product_query} (x{cantidad_solicitada})**\n   ❌ No disponible\n\n"
                 continue
+            
+            print(f"   ✅ RESULTADO: {len(resultados_validos)} opción(es) externa(s) encontrada(s)")
                         
-            # Indicar tipo de búsqueda en el mensaje
+            # Indicar tipo de búsqueda y estado de stock en el mensaje
             tipo_busqueda = "🔢 Por código" if codigos_sin_stock else "🔍 Semántica"
-            mensaje_externos += f"**{idx}. {product_query}** ({tipo_busqueda})\n"
+            estado_stock = "⚠️ Stock insuficiente" if stock_insuficiente else "❌ Sin stock"
+            mensaje_externos += f"**{idx}. {product_query} (x{cantidad_solicitada})** - {estado_stock}\n"
+            mensaje_externos += f"   {tipo_busqueda} - Opciones externas:\n"
             
             for i, r in enumerate(resultados_validos[:3], 1):  # Top 3
                 if '_id' in r:
@@ -332,7 +447,12 @@ def semantic_search_external(state: AgentState) -> AgentState:
             mensaje_externos += "\n"
                     
         except Exception as e:
-            print(f"   ❌ Error: {e}\n")
+            print(f"   ❌ ERROR: {e}")
+    
+    print("\n" + "="*70)
+    print(f"✅ BÚSQUEDA EXTERNA COMPLETADA")
+    print(f"   • Opciones externas encontradas: {len(codigos_externos)}")
+    print("="*70 + "\n")
     
     # Combinar códigos
     todos_codigos = list(state.get("codigos_repuestos", [])) + codigos_externos

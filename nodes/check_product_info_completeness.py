@@ -22,6 +22,7 @@ def check_product_info_completeness(state: AgentState) -> AgentState:
     # Verificar CADA producto con el LLM
     for idx, product in enumerate(product_requests, 1):
         product_name = product.get("name", "")
+        cantidad = product.get("cantidad", 1)
         
         try:
             # Invocar LLM para verificar este producto
@@ -39,18 +40,20 @@ def check_product_info_completeness(state: AgentState) -> AgentState:
                 productos_completos.append({
                     "idx": idx,
                     "nombre": product_name,
+                    "cantidad": cantidad,
                     "razon": verificacion.razon
                 })
-                print(f"✅ Producto {idx}: '{product_name}'")
+                print(f"✅ Producto {idx}: '{product_name}' (Cantidad: {cantidad})")
                 print(f"   → Información completa: {verificacion.razon}\n")
             else:
                 productos_incompletos.append({
                     "idx": idx,
                     "nombre": product_name,
+                    "cantidad": cantidad,
                     "razon": verificacion.razon,
                     "faltante": verificacion.info_faltante
                 })
-                print(f"⚠️  Producto {idx}: '{product_name}'")
+                print(f"⚠️  Producto {idx}: '{product_name}' (Cantidad: {cantidad})")
                 print(f"   → Información incompleta: {verificacion.razon}")
                 if verificacion.info_faltante:
                     print(f"   → Falta: {', '.join(verificacion.info_faltante)}\n")
@@ -64,6 +67,7 @@ def check_product_info_completeness(state: AgentState) -> AgentState:
             productos_incompletos.append({
                 "idx": idx,
                 "nombre": product_name,
+                "cantidad": cantidad,
                 "razon": "Error al verificar",
                 "faltante": ["detalles"]
             })

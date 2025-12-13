@@ -9,7 +9,7 @@ class AgentState(TypedDict):
     conversation_result: Optional[ConversationResult]  # Resultado del análisis conversacional
     messages: Annotated[list, add_messages]
     product_description: List[str]
-    product_requests: Optional[List[Dict]]  # Lista de productos con tracking de info completa
+    product_requests: Optional[List[Dict]]  # Lista de productos con tracking: {name, cantidad, info_needed, details, info_solicitada}
     codigos_repuestos: Optional[List[str]]  # Lista de códigos únicos (R-XXXX)
     repuestos_encontrados: Optional[List[Repuesto]]  # Lista de objetos Repuesto con todas las variantes
     productos_sin_match_interno: Optional[List[Dict]]  # Productos que no se encontraron internamente

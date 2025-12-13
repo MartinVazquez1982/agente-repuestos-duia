@@ -33,12 +33,16 @@ def generate_external_email(state: AgentState) -> AgentState:
         
         for i, prod in enumerate(productos, 1):
             precio = prod.get('precio', 0)
+            cantidad = prod.get('cantidad', 1)
             lead_time = prod.get('lead_time', 'N/A')
-            total_proveedor += precio
+            
+            valor_total = precio * cantidad
+            total_proveedor += valor_total
             
             print(f"{i}. {prod['codigo']} - {prod['descripcion']}")
-            print(f"   Cantidad: 1 unidad")
-            print(f"   Precio referencia: ${precio:.2f}")
+            print(f"   Cantidad solicitada: {cantidad} unidad{'es' if cantidad != 1 else ''}")
+            print(f"   Precio unitario referencia: ${precio:.2f}")
+            print(f"   Subtotal: ${valor_total:.2f}")
             print(f"   Lead time estimado: {lead_time} días\n")
         
         print(f"💰 Total estimado: ${total_proveedor:.2f}")

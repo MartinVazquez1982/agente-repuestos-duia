@@ -47,8 +47,11 @@ if __name__ == "__main__":
     ## DEBUG PARA PRODUCTO SIN STOCK
     #mensaje_usuario = "Necesito el filtro Atlas Copco modelo AC-250 para compresor de 250 m3/h"
 
-    ## DEBUG PARA PRODUCTO INTERNO Y EXTERNO
-    mensaje_usuario = "Necesito un rodamiento SKF 6204 2RS y una cámara termográfica FLIR modelo E8-XT" # R-0101 y R-0102
+    ## DEBUG PARA PRODUCTO INTERNO Y EXTERNO (hay stock insuficiente)
+    #mensaje_usuario = "Necesito 23 rodamientos SKF 6204 2RS y una cámara termográfica FLIR modelo E8-XT" # R-0101 y R-0102
+    
+    ## DEBUG PARA PRODUCTO INTERNO Y EXTERNO (no hay stock insuficiente)
+    mensaje_usuario = "Necesito 25 rodamientos SKF 6204 2RS y 1 cámara termográfica FLIR modelo E8-XT" # R-0101 y R-0102
 
     # Estado inicial con todos los campos
     estado_inicial = {
