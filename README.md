@@ -112,7 +112,7 @@ GROQ_API_KEY=tu_api_key_de_groq
 MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/
 ```
 
-Obtener credenciales:
+Obtener credenciales o utilizar las que se encuentran en el mensaje de la entrega:
 - **Groq API**: [console.groq.com](https://console.groq.com)
 - **MongoDB Atlas**: [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
 
@@ -133,17 +133,17 @@ Este script:
 
 El proyecto cuenta con un dockerfile para que sea posible ejecutarlo desde un contenedor para no depender de compatibilidad con el SO. Para ellos continuar con los siguientes pasos:
 
-**1. Creación de la imagen**
+**1. Creación de la imagen (Demora varios minutos)**
 ```bash
 docker build -t "nombre para imagen" .
 ```
 
 **2. Ejecutar el contenedor**
 ```bash
-docker run "nombre para imagen"
+docker run -it "nombre para imagen"
 ```
 
-Es importante que no utilicen la opción `-d` dado que ejecuta el contenedor en segundo plano y para poder interactuar con el agente es necesario la consola
+Es importante que no utilicen la opción `-d` dado que ejecuta el contenedor en segundo plano y la opción se utiliza `-it` para poder utilizar la consola dado que es la fomrma de interactuar con el agente.
 
 ## Uso del Sistema
 
