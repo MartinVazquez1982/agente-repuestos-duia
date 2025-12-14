@@ -10,10 +10,6 @@ def semantic_search_internal(state: AgentState) -> AgentState:
     """    
     product_requests = state.get("product_requests", [])
     
-    print("\n" + "="*70)
-    print("🔍 BÚSQUEDA SEMÁNTICA INTERNA")
-    print("="*70)
-    
     model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
     
     todos_repuestos = []
@@ -27,11 +23,7 @@ def semantic_search_internal(state: AgentState) -> AgentState:
         product_query = product_req.get("name", "")
         cantidad_solicitada = product_req.get("cantidad", 1)  # Obtener cantidad solicitada
         
-        print(f"\n📦 PRODUCTO {idx}: '{product_query}' (Cantidad: {cantidad_solicitada})")
-        print("-" * 70)
-        
         if not product_query:
-            print("   ⚠️  Descripción vacía, saltando...")
             continue
                 
         query_embedding = model.encode(product_query).tolist()
@@ -69,11 +61,8 @@ def semantic_search_internal(state: AgentState) -> AgentState:
             
             # Filtrar por proveedor_tipo DESPUÉS de la búsqueda
             resultados = [r for r in resultados_raw if r.get('proveedor_tipo') == 'INTERNAL']
-            
-            print(f"   🔎 Búsqueda vectorial completada: {len(resultados)} resultados internos")
-            
+                        
             if not resultados or len(resultados) == 0:
-                print(f"   ❌ RESULTADO: No encontrado en inventario interno")
                 productos_sin_resultados.append({
                     "idx": idx,
                     "name": product_query,
@@ -89,7 +78,6 @@ def semantic_search_internal(state: AgentState) -> AgentState:
             
             # Filtrar por score mínimo
             resultados_validos = [r for r in resultados if r.get('score', 0) >= 0.5]
-            print(f"   📊 Filtrado por score >= 0.5: {len(resultados_validos)} opciones válidas")
             
             # Clasificar por suficiencia de stock
             resultados_stock_suficiente = []
@@ -106,15 +94,9 @@ def semantic_search_internal(state: AgentState) -> AgentState:
                 else:
                     resultados_sin_stock.append(r)
             
-            print(f"   📈 Análisis de stock:")
-            print(f"      ✅ Stock suficiente (>= {cantidad_solicitada}): {len(resultados_stock_suficiente)} opciones")
-            print(f"      ⚠️  Stock insuficiente (< {cantidad_solicitada}): {len(resultados_stock_insuficiente)} opciones")
-            print(f"      ❌ Sin stock: {len(resultados_sin_stock)} opciones")
-            
             # DECISIÓN: ¿Hay suficiente stock en al menos UNA opción?
             if resultados_stock_suficiente:
                 # ✅ HAY STOCK SUFICIENTE - Mostrar solo internos
-                print(f"   ✅ DECISIÓN: Mostrar solo internos (hay stock suficiente)")
                 
                 mensaje_productos += f"**{idx}. {product_query} (x{cantidad_solicitada})**\n"
                 
@@ -149,16 +131,13 @@ def semantic_search_internal(state: AgentState) -> AgentState:
                 mensaje_productos += "\n"
             
             else:
-                # ⚠️ STOCK INSUFICIENTE O SIN STOCK - Buscar en externos
-                print(f"   🌐 DECISIÓN: Buscar en externos (stock insuficiente o sin stock)")
-                
+                # ⚠️ STOCK INSUFICIENTE O SIN STOCK - Buscar en externos                
                 codigos_para_externos = []
                 
                 # ═══════════════════════════════════════════════════════
                 # AGREGAR opciones internas con stock insuficiente al ranking
                 # ═══════════════════════════════════════════════════════
                 if resultados_stock_insuficiente:
-                    print(f"   📋 Agregando {len(resultados_stock_insuficiente)} opciones internas (stock insuficiente) al ranking")
                     
                     for r in resultados_stock_insuficiente:
                         if '_id' in r:
@@ -195,9 +174,6 @@ def semantic_search_internal(state: AgentState) -> AgentState:
                     if codigo and codigo not in codigos_para_externos:
                         codigos_para_externos.append(codigo)
                 
-                if codigos_para_externos:
-                    print(f"      📋 Códigos para búsqueda externa: {', '.join(codigos_para_externos)}")
-                
                 # Mostrar lo que hay (aunque sea insuficiente)
                 mensaje_productos += f"**{idx}. {product_query} (x{cantidad_solicitada})**\n"
                 
@@ -226,19 +202,12 @@ def semantic_search_internal(state: AgentState) -> AgentState:
             mensaje_productos += "\n"
                     
         except Exception as e:
-            print(f"   ❌ ERROR: {e}")
             productos_sin_resultados.append({
                 "idx": idx,
                 "name": product_query,
                 "product_req": product_req,
                 "cantidad_solicitada": cantidad_solicitada
             })
-    
-    print("\n" + "="*70)
-    print(f"✅ BÚSQUEDA INTERNA COMPLETADA")
-    print(f"   • Productos con stock suficiente: {len(todos_repuestos)}")
-    print(f"   • Productos que requieren búsqueda externa: {len(productos_sin_resultados)}")
-    print("="*70 + "\n")
     
     # Preparar mensaje
     mensaje = "🔍 **Resultados de búsqueda interna:**\n\n"
@@ -268,12 +237,7 @@ def semantic_search_external(state: AgentState) -> AgentState:
     productos_sin_match = state.get("productos_sin_match_interno", [])
     
     if not productos_sin_match:
-        print("\n✅ Todos los productos tienen stock suficiente internamente")
         return {}
-    
-    print("\n" + "="*70)
-    print("🌐 BÚSQUEDA SEMÁNTICA EXTERNA")
-    print("="*70)
     
     model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
     
@@ -289,18 +253,12 @@ def semantic_search_external(state: AgentState) -> AgentState:
         cantidad_solicitada = item.get("cantidad_solicitada", 1)  # Obtener cantidad
         codigos_sin_stock = item.get("codigos_sin_stock", [])
         stock_insuficiente = item.get("stock_insuficiente", False)
-        
-        print(f"\n📦 PRODUCTO {idx}: '{product_query}' (Cantidad: {cantidad_solicitada})")
-        print("-" * 70)
-        estado = "Stock insuficiente" if stock_insuficiente else "Sin stock"
-        print(f"   ⚠️  Estado interno: {estado}")
-        
+                
         # BÚSQUEDA HÍBRIDA: Por código si existe, sino semántica
         if codigos_sin_stock:
             # ═══════════════════════════════════════════════════════
             # CASO A: BÚSQUEDA POR CÓDIGO (más precisa y rápida)
             # ═══════════════════════════════════════════════════════
-            print(f"   🔢 Búsqueda por código: {', '.join(codigos_sin_stock)}")
             
             resultados = []
             for codigo in codigos_sin_stock:
@@ -329,10 +287,7 @@ def semantic_search_external(state: AgentState) -> AgentState:
                 try:
                     resultados_codigo = list(MongoCollectionManager().get_collection().aggregate(pipeline))
                     resultados.extend(resultados_codigo)
-                    if resultados_codigo:
-                        print(f"      ✅ {codigo}: {len(resultados_codigo)} proveedor(es) externo(s)")
-                    else:
-                        print(f"      ❌ {codigo}: No disponible en externos")
+
                 except Exception as e:
                     print(f"      ❌ Error buscando {codigo}: {e}")
             
@@ -344,7 +299,6 @@ def semantic_search_external(state: AgentState) -> AgentState:
             # ═══════════════════════════════════════════════════════
             # CASO B: BÚSQUEDA SEMÁNTICA (fallback sin código)
             # ═══════════════════════════════════════════════════════
-            print(f"   🔍 Búsqueda semántica vectorial")
             
             query_embedding = model.encode(product_query).tolist()
             
@@ -380,9 +334,7 @@ def semantic_search_external(state: AgentState) -> AgentState:
                 
                 # Filtrar por proveedor_tipo DESPUÉS de la búsqueda
                 resultados = [r for r in resultados_raw if r.get('proveedor_tipo') == 'EXTERNAL']
-                print(f"      📊 Resultados externos encontrados: {len(resultados)}")
             except Exception as e:
-                print(f"      ❌ Error en búsqueda semántica: {e}")
                 resultados = []
         
         # ═══════════════════════════════════════════════════════
@@ -390,21 +342,16 @@ def semantic_search_external(state: AgentState) -> AgentState:
         # ═══════════════════════════════════════════════════════
         try:
             if not resultados:
-                print(f"   ❌ RESULTADO: No encontrado en externos")
                 mensaje_externos += f"**{idx}. {product_query} (x{cantidad_solicitada})**\n   ❌ No disponible\n\n"
                 continue
             
             # Filtrar por score (búsqueda por código ya tiene score=1.0)
             resultados_validos = [r for r in resultados if r.get('score', 0) >= 0.50]
-            print(f"   📊 Filtrado por score >= 0.5: {len(resultados_validos)} opciones válidas")
             
             if not resultados_validos:
-                print(f"   ❌ RESULTADO: Sin resultados válidos (score < 0.50)")
                 mensaje_externos += f"**{idx}. {product_query} (x{cantidad_solicitada})**\n   ❌ No disponible\n\n"
                 continue
-            
-            print(f"   ✅ RESULTADO: {len(resultados_validos)} opción(es) externa(s) encontrada(s)")
-                        
+                                    
             # Indicar tipo de búsqueda y estado de stock en el mensaje
             tipo_busqueda = "🔢 Por código" if codigos_sin_stock else "🔍 Semántica"
             estado_stock = "⚠️ Stock insuficiente" if stock_insuficiente else "❌ Sin stock"
@@ -443,11 +390,6 @@ def semantic_search_external(state: AgentState) -> AgentState:
                     
         except Exception as e:
             print(f"   ❌ ERROR: {e}")
-    
-    print("\n" + "="*70)
-    print(f"✅ BÚSQUEDA EXTERNA COMPLETADA")
-    print(f"   • Opciones externas encontradas: {len(codigos_externos)}")
-    print("="*70 + "\n")
     
     # Combinar códigos
     todos_codigos = list(state.get("codigos_repuestos", [])) + codigos_externos

@@ -41,8 +41,7 @@ def check_product_info_completeness(state: AgentState) -> AgentState:
                     "cantidad": cantidad,
                     "razon": verificacion.razon
                 })
-                print(f"✅ Producto {idx}: '{product_name}' (Cantidad: {cantidad})")
-                print(f"   → Información completa: {verificacion.razon}\n")
+
             else:
                 productos_incompletos.append({
                     "idx": idx,
@@ -51,15 +50,8 @@ def check_product_info_completeness(state: AgentState) -> AgentState:
                     "razon": verificacion.razon,
                     "faltante": verificacion.info_faltante
                 })
-                print(f"⚠️  Producto {idx}: '{product_name}' (Cantidad: {cantidad})")
-                print(f"   → Información incompleta: {verificacion.razon}")
-                if verificacion.info_faltante:
-                    print(f"   → Falta: {', '.join(verificacion.info_faltante)}\n")
-                else:
-                    print()
                 
         except Exception as e:
-            print(f"❌ Error verificando producto {idx}: {e}")
             # Por defecto, marcar como incompleto si hay error
             product["info_needed"] = True
             productos_incompletos.append({

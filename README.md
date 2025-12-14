@@ -24,30 +24,7 @@ El sistema implementa una arquitectura basada en **grafos de estado** (LangGraph
 
 ### Arquitectura del Grafo
 
-```
-START → Validación → Extracción de Productos → Verificación de Completitud
-                                                        ↓
-                                                  Búsqueda Interna
-                                                        ↓
-                                          ¿Stock suficiente? 
-                                           /              \
-                                        Sí                 No
-                                         ↓                  ↓
-                                    Ranking          Búsqueda Externa
-                                         ↓                  ↓
-                                    Verificación Stock ←────┘
-                                         ↓
-                              Human-in-the-Loop (Selección)
-                                         ↓
-                              Procesamiento de Orden
-                                    /    |    \
-                            Interno  Externo  Mixto
-                                    \    |    /
-                                         ↓
-                              Agendamiento de Entrega
-                                         ↓
-                                       END
-```
+![Texto Alternativo](diagram.png)
 
 ### Componentes Principales
 
@@ -151,6 +128,22 @@ Este script:
 - Crea índice vectorial automáticamente
 
 ---
+
+### Alternativa (Docker)
+
+El proyecto cuenta con un dockerfile para que sea posible ejecutarlo desde un contenedor para no depender de compatibilidad con el SO. Para ellos continuar con los siguientes pasos:
+
+**1. Creación de la imagen**
+```bash
+docker build -t "nombre para imagen" .
+```
+
+**2. Ejecutar el contenedor**
+```bash
+docker run "nombre para imagen"
+```
+
+Es importante que no utilicen la opción `-d` dado que ejecuta el contenedor en segundo plano y para poder interactuar con el agente es necesario la consola
 
 ## Uso del Sistema
 
@@ -314,47 +307,11 @@ agente-repuestos-duia/
 - **Multi-turno**: Soporta conversaciones largas sin perder contexto
 - **Thread ID**: Identifica sesiones únicas de usuario
 
-### 5. Routing Condicional Complejo
-
-- **Decisiones basadas en contexto**: 7 puntos de routing diferentes
-- **Flujos alternativos**: Maneja casos sin stock, cancelaciones, etc.
-- **Optimización de búsqueda**: Solo busca externamente si es necesario
-
 ---
 
 ## Casos de Uso
 
-### Caso 1: Stock Interno Suficiente
-
-**Input**: "Necesito un rodamiento SKF 6204-2RS"
-
-**Flujo**:
-1. Validación → Pedido de repuestos ✓
-2. Extracción → "rodamiento SKF 6204-2RS" ✓
-3. Búsqueda interna → 3 opciones encontradas (stock: 30, 45, 20)
-4. Ranking → Ordena por precio y disponibilidad
-5. Usuario selecciona → Orden interna generada
-
-### Caso 2: Stock Insuficiente - Búsqueda Externa
-
-**Input**: "Necesito 100 unidades del filtro Bosch 1457"
-
-**Flujo**:
-1. Búsqueda interna → 2 opciones (stock: 20, 35) ⚠
-2. Búsqueda externa → 3 proveedores externos encontrados
-3. Ranking mixto → Muestra internos (parcial) + externos
-4. Usuario selecciona proveedor externo → Email de cotización generado
-
-### Caso 3: Sin Stock - Reinicio de Búsqueda
-
-**Input**: "Necesito sensor Atlas Copco XYZ-999"
-
-**Flujo**:
-1. Búsqueda interna → Sin resultados
-2. Búsqueda externa → Sin resultados
-3. Agente informa falta de stock y pregunta si desea otra búsqueda
-4. Usuario responde "sí, busco sensor de presión Siemens"
-5. Nueva búsqueda con productos actualizados
+En el archivo `agente_prompt_prueba.txt` cuenta con 5 casos de prueba para el agente
 
 ---
 

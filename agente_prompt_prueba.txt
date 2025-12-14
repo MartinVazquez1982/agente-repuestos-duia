@@ -1,0 +1,28 @@
+# ====================================================================
+# CASO 1: Producto Interno (SKF 6204 2RS) y Producto Externo (FLIR E8-XT) con stock suficiente
+# Referencia: R-0101 (Rodamiento) y R-0102 (Cámara)
+# ====================================================================
+Necesito 25 rodamientos SKF 6204 2RS y 1 cámara termográfica FLIR modelo E8-XT
+
+# ====================================================================
+# CASO 2: Producto solo Interno
+# ====================================================================
+Necesito un Rodamiento rígido de bolas modelo 6204 2RS
+
+# ====================================================================
+# CASO 3: Producto sin Stock
+# ====================================================================
+Necesito el filtro Atlas Copco modelo AC-250 para compresor de 250 m3/h
+
+# ====================================================================
+# CASO 4: Producto Interno y Externo con Stock Insuficiente para un producto
+# Referencia: R-0101 (Rodamiento) y R-0102 (Cámara)
+# ====================================================================
+Necesito 23 rodamientos SKF 6204 2RS y una cámara termográfica FLIR modelo E8-XT
+
+# ====================================================================
+# CASO 5: Producto no existente en la base de datos
+# Aclaración:   Aca podemos ver como la busqueda semantica si encuentra algo, pero no es
+#               ni cerca lo pedido. Es un punto de mejora para el agente
+# ====================================================================
+Necesito un iman de motor tracero marca Acme

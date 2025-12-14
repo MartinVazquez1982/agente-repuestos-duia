@@ -44,7 +44,6 @@ def process_user_selection(state: AgentState) -> AgentState:
         })
         
     except Exception as e:
-        print(f"❌ Error al interpretar con LLM: {e}")
         # Fallback a regex simple con cantidades
         import re
         # Patrón: captura cantidad (opcional) + código
@@ -90,9 +89,7 @@ def process_user_selection(state: AgentState) -> AgentState:
             )
     
     # Procesar según la acción interpretada
-    if interpretation.accion == "cancelar":
-        print(f"❌ Usuario canceló el pedido")
-        
+    if interpretation.accion == "cancelar":   
         mensaje = "❌ **Pedido cancelado**\n\n"
         mensaje += "Entendido, no se procesará ningún pedido."
         
@@ -103,7 +100,6 @@ def process_user_selection(state: AgentState) -> AgentState:
         }
     
     elif interpretation.accion == "confirmar_todo":
-        print(f"✅ Usuario confirmó todas las opciones")
         # Crear productos_seleccionados con cantidad = 1 para todos
         from schemas.structure_outputs import ProductSelection
         productos_seleccionados = [
@@ -112,9 +108,6 @@ def process_user_selection(state: AgentState) -> AgentState:
         
     elif interpretation.accion == "seleccionar_codigos":
         productos_mencionados = interpretation.productos_seleccionados
-        print(f"📋 Productos seleccionados:")
-        for prod in productos_mencionados:
-            print(f"   • {prod.codigo}: {prod.cantidad} unidad(es)")
         
         # Validar que los códigos existan en el ranking
         codigos_mencionados = [p.codigo for p in productos_mencionados]
@@ -122,8 +115,6 @@ def process_user_selection(state: AgentState) -> AgentState:
         productos_validos = [p for p in productos_mencionados if p.codigo in codigos_disponibles]
         
         if codigos_invalidos:
-            print(f"⚠️  Códigos inválidos: {codigos_invalidos}")
-            
             mensaje = f"❌ **Códigos no válidos**\n\n"
             mensaje += f"Los siguientes códigos NO están en el ranking:\n"
             for codigo in codigos_invalidos:
@@ -166,7 +157,6 @@ def process_user_selection(state: AgentState) -> AgentState:
         productos_seleccionados = productos_validos
     
     else:  # no_entendido
-        print(f"❓ No se pudo interpretar la respuesta")
         mensaje = "❓ **No entendí tu respuesta**\n\n"
         mensaje += "Por favor indica:\n"
         mensaje += "• **'confirmar'** - Para proceder con todas las opciones\n"

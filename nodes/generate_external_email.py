@@ -20,7 +20,7 @@ def generate_external_email(state: AgentState) -> AgentState:
     
     # PRINT DIRECTO (no mensaje al state)
     print("\n" + "═" * 80)
-    print("📧 IMPRIMIENDO EMAIL PARA PROVEEDORES EXTERNOS...")
+    print("📧 IMPRIMIENDO EMAIL PARA PROVEEDORES EXTERNOS (No es respuesta del agente al usuario)...")
     print("═" * 80 + "\n")
     
     for proveedor, productos in por_proveedor.items():

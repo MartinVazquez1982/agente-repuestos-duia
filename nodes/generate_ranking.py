@@ -34,14 +34,12 @@ def generate_ranking(state: AgentState) -> AgentState:
             )
     
     if not opciones_para_llm:
-        print("⚠️ No hay opciones para rankear\n")
         return {
             "recomendaciones_llm": "No hay opciones disponibles."
         }
     
     # Crear el texto completo para el LLM
     opciones_texto = "\n\n".join(opciones_para_llm)
-    print(f"Estas son las opciones!! {opciones_texto}")
     
     try:
         # Invocar el LLM para que haga el ranking
@@ -49,7 +47,6 @@ def generate_ranking(state: AgentState) -> AgentState:
         recomendaciones_texto = recomendaciones.content
         
     except Exception as e:
-        print(f"❌ Error al obtener ranking del LLM: {e}\n")
         recomendaciones_texto = "Error al generar ranking automático."
     
     return {

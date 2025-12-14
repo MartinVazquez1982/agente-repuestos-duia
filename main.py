@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from chains.chain_administrator import ChainAdministrator
 from db.mongo import MongoCollectionManager
-from agent import generate_agent
+from graph import generate_graph
 from langchain_core.messages import AIMessage, HumanMessage
 
 if __name__ == "__main__":
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     mongo_db = MongoCollectionManager()
     mongo_db.initialize()
     
-    graph = generate_agent()
+    graph = generate_graph()
     
     print("="*60)
     print("🔧 SISTEMA DE BÚSQUEDA DE REPUESTOS")
@@ -38,20 +38,8 @@ if __name__ == "__main__":
     print("-"*60)
     
     config = {"configurable": {"thread_id": "1"}}
-    
-    #mensaje_usuario = input("\n👤 Tú: ")
-
-    ## DEBUG PARA PRODUCTO SOLO INTERNO
-    #mensaje_usuario = "Necesito un Rodamiento rígido de bolas modelo 6204 2RS"
-
-    ## DEBUG PARA PRODUCTO SIN STOCK
-    #mensaje_usuario = "Necesito el filtro Atlas Copco modelo AC-250 para compresor de 250 m3/h"
-
-    ## DEBUG PARA PRODUCTO INTERNO Y EXTERNO (hay stock insuficiente)
-    #mensaje_usuario = "Necesito 23 rodamientos SKF 6204 2RS y una cámara termográfica FLIR modelo E8-XT" # R-0101 y R-0102
-    
-    ## DEBUG PARA PRODUCTO INTERNO Y EXTERNO (no hay stock insuficiente)
-    mensaje_usuario = "Necesito 25 rodamientos SKF 6204 2RS y 1 cámara termográfica FLIR modelo E8-XT" # R-0101 y R-0102
+        
+    mensaje_usuario = input("\n👤 Tú: ")
 
     # Estado inicial con todos los campos
     estado_inicial = {

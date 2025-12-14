@@ -11,12 +11,12 @@ REGLAS DE PRIORIZACIÓN (OBLIGATORIAS):
 
 FORMATO DE RESPUESTA (conciso):
 
-🥇 [CODIGO][Proveedor] (INTERNO)
+🥇 [CODIGO][MUY BREVE DESCRIPCION][Proveedor] (INTERNO)
     • Precio: $[precio] | Stock: [cantidad] | Entrega: [días] días
     • ✅ [Razón breve por qué es la mejor - máximo 1 línea]
-🥈 [CODIGO][Proveedor] (INTERNO) - $[precio] - [Stock/Entrega]
-🥉 [CODIGO][Proveedor] (EXTERNO) - $[precio] - [Entrega: X días]
-🏅 [CODIGO][Proveedor] (EXTERNO) - $[precio] - [Entrega: X días]
+🥈 [CODIGO][MUY BREVE DESCRIPCION][Proveedor] (INTERNO) - $[precio] - [Stock/Entrega]
+🥉 [CODIGO][MUY BREVE DESCRIPCION][Proveedor] (EXTERNO) - $[precio] - [Entrega: X días]
+🏅 [CODIGO][MUY BREVE DESCRIPCION][Proveedor] (EXTERNO) - $[precio] - [Entrega: X días]
 
 ⚠️ Alertas: [Solo si hay stock bajo/insuficiente, entrega larga (>7 días) o precio alto]
 

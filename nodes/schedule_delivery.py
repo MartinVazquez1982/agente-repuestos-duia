@@ -31,16 +31,6 @@ def schedule_delivery(state: AgentState) -> AgentState:
     internos = [s for s in selecciones if s.get('tipo') == 'INTERNO']
     externos = [s for s in selecciones if s.get('tipo') == 'EXTERNO']
     
-    # PRINT DIRECTO de la agenda
-    print("\n" + "═" * 80)
-    print("📅 AGENDANDO FECHA DE ENTREGA EN SISTEMA DE SEGUIMIENTO...")
-    print("═" * 80 + "\n")
-    print(f"⏰ Fecha de registro: {fecha_actual.strftime('%d/%m/%Y %H:%M')}")
-    print(f"📦 FECHA ESTIMADA DE ENTREGA: {fecha_estimada.strftime('%d/%m/%Y')}")
-    print(f"⏱️  Lead time máximo: {max_lead_time} día{'s' if max_lead_time != 1 else ''}\n")
-    print("✅ Fecha agendada exitosamente en el sistema")
-    print("═" * 80 + "\n")
-    
     # GENERAR MENSAJE DEL AGENTE (sin LLM, template simple)
     mensaje = _generar_resumen_final(internos, externos, fecha_estimada, max_lead_time)
     

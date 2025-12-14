@@ -38,10 +38,6 @@ def extract_products_info(state: AgentState) -> AgentState:
             if not p.get("info_needed", True)
         ]
         
-        if productos_previos_completos:
-            for p in productos_previos_completos:
-                print(f"      - {p.get('name', 'sin nombre')}")
-        
         # Combinar: primero los completos previos, luego los nuevos
         product_requests = productos_previos_completos + new_product_requests
         

@@ -6,10 +6,10 @@ def process_both_types(state: AgentState) -> AgentState:
     """
     Procesa productos INTERNOS y EXTERNOS llamando a ambas funciones de impresión.
     """
-    # Procesar internos (hace print)
+    # Procesar internos
     process_internal_order(state)
     
-    # Procesar externos (hace print)
+    # Procesar externos
     generate_external_email(state)
     
     # No retorna mensaje, el resumen lo hará schedule_delivery

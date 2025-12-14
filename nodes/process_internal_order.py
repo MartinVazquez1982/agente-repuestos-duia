@@ -20,7 +20,7 @@ def process_internal_order(state: AgentState) -> AgentState:
     
     # PRINT DIRECTO (no mensaje al state)
     print("\n" + "═" * 80)
-    print("🖨️  IMPRIMIENDO ORDEN DE COMPRA INTERNA...")
+    print("🖨️  IMPRIMIENDO ORDEN DE COMPRA INTERNA (No es una mensaje para el usuario)...")
     print("═" * 80 + "\n")
     
     total_general = 0
